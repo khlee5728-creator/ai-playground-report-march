@@ -49,7 +49,7 @@ tailwind.config = {
 
   /* Flow step */
   .flow-step { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #f1f5f9; border-radius: 12px; margin-bottom: 6px; }
-  .flow-step div { font-size: 14px !important; line-height: 1.45 !important; }
+  .flow-step div { font-size: 15px !important; line-height: 1.5 !important; }
   .flow-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: white; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); background: #6366f1; }
   .flow-num.num-emerald { background: #047857; }
   .flow-num.num-amber { background: #d97706; }
@@ -123,7 +123,10 @@ tailwind.config = {
   .fade-in-up { animation: fadeInUp 0.6s ease forwards; }
 
   /* Readability overrides */
-  .slide h3.text-xs { font-size: 12px !important; letter-spacing: 0.08em !important; }
+  .slide .text-sm { font-size: 16px !important; }
+  .slide .text-xs { font-size: 13px !important; }
+  .slide p.text-sm { line-height: 1.6 !important; }
+  .slide h3.text-xs { font-size: 13px !important; letter-spacing: 0.08em !important; }
 
   /* Slide header icon */
   .slide-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); flex-shrink: 0; }
@@ -133,7 +136,7 @@ tailwind.config = {
   .icon-purple { background: #9333ea; }
 
   /* Slide page number */
-  .slide-page-num { position: absolute; bottom: 20px; right: 140px; font-size: 12px; color: #94a3b8; font-weight: 500; z-index: 20; }
+  .slide-page-num { display: none; }
 
   /* PDF save button */
   .pdf-btn { position: fixed; top: 20px; right: 20px; z-index: 200; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 16px; color: #64748b; font-size: 13px; font-family: 'Pretendard', sans-serif; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
@@ -169,7 +172,7 @@ tailwind.config = {
     .pdf-btn, .progress-bar, .page-indicator, .nav-hint, .carousel-nav, .sim-modal { display: none !important; }
     .hover-card:hover { transform: none; box-shadow: none; }
     .thumb-card:hover img { transform: none; }
-    .slide-page-num { display: block !important; }
+    .slide-page-num { display: block !important; position: absolute; bottom: 20px; right: 40px; font-size: 12px; color: #94a3b8; font-weight: 500; }
 
     /* Carousel: preserve aspect ratio, show only active image */
     .img-carousel { aspect-ratio: 16 / 10 !important; width: 100% !important; max-height: 280px; overflow: hidden !important; position: relative !important; }
@@ -210,7 +213,7 @@ tailwind.config = {
   <div class="slide active" data-bg="linear-gradient(135deg, #ffffff 0%, #eef2ff 50%, #e0e7ff 100%)">
     <div class="text-center max-w-3xl">
       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-8 fade-in-up">
-        <i class="fas fa-rocket"></i> 2026년 3월 정식 런칭
+        <i class="fas fa-rocket"></i> 2026년 3월 2차 런칭
       </div>
       <h1 class="text-5xl md:text-7xl font-black mb-6 fade-in-up" style="animation-delay:0.1s">
         <span class="gradient-text">AI Playground</span>
@@ -218,13 +221,11 @@ tailwind.config = {
       <h2 class="text-2xl md:text-3xl text-slate-800 font-bold mb-4 fade-in-up" style="animation-delay:0.2s">
         신규 게임 4종 런칭 개발 보고서
       </h2>
-      <p class="text-slate-500 text-lg mb-12 fade-in-up" style="animation-delay:0.3s">
-        AI 기술의 게이미피케이션 &middot; 사용자 참여형 개발 &middot; 1인 풀스택
-      </p>
+      <div class="mb-12"></div>
       <div class="flex items-center justify-center gap-6 text-slate-400 text-sm fade-in-up" style="animation-delay:0.4s">
         <span><i class="far fa-calendar-alt mr-2"></i>2026. 03. 30</span>
         <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
-        <span><i class="far fa-user mr-2"></i>AI Playground 개발팀</span>
+        <span><i class="far fa-user mr-2"></i>이경희</span>
       </div>
       <div class="mt-16 text-slate-300 text-sm fade-in-up" style="animation-delay:0.6s">
         <i class="fas fa-arrow-right animate-pulse"></i> 클릭 또는 방향키로 넘기기
@@ -233,7 +234,7 @@ tailwind.config = {
   </div>
 
   <!-- ========== SLIDE 2: 목차 & 핵심 요약 ========== -->
-  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #f8fafc)" style="align-items:flex-start !important;padding-top:32px !important;">
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #f8fafc)">
     <div class="slide-page-num">2 / 10</div>
     <div class="w-full max-w-4xl">
       <div class="text-center mb-3">
@@ -683,22 +684,24 @@ tailwind.config = {
             <div style="width:44px;height:44px;border-radius:12px;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-wand-magic-sparkles"></i></div>
             <h3 class="text-slate-800 font-bold text-base">Antigravity + Claude Code</h3>
           </div>
-          <p class="text-slate-500 text-sm leading-relaxed flex-1">Antigravity의 실시간 시각 프리뷰와 Claude Code의 에이전트 자율 실행을 결합한 Vibe Coding 환경으로 빠른 프로토타이핑 실현</p>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">Antigravity의 실시간 시각 프리뷰와 Claude Code의 에이전트 자율 실행을 결합한 Vibe Coding 환경. Skill.md로 공통 기술 패턴(JWT, API 등)을 표준화하여 일관된 코드 생성</p>
           <div class="mt-3 flex flex-wrap gap-1">
             <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">실시간 프리뷰</span>
             <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">에이전트 자율 실행</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">Skill.md</span>
           </div>
         </div>
         <!-- Card 2 -->
         <div class="glass p-5 hover-card flex flex-col">
           <div class="flex items-center gap-3 mb-3">
             <div style="width:44px;height:44px;border-radius:12px;background:#d97706;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-file-code"></i></div>
-            <h3 class="text-slate-800 font-bold text-base">Skill.md 표준화</h3>
+            <h3 class="text-slate-800 font-bold text-base">Single Source of Truth</h3>
           </div>
-          <p class="text-slate-500 text-sm leading-relaxed flex-1">공통 기술 패턴(JWT 인증, API 호출 등)을 Skill 파일로 문서화하여 에이전트가 일관된 코드를 생성하도록 작업 방식 표준화</p>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">PRD &middot; TRD &middot; IA 문서 작업으로 바이브 코딩의 방향을 잃지 않고, 기획 의도와 개발 결과의 일관성 확보</p>
           <div class="mt-3 flex flex-wrap gap-1">
-            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">Single Source of Truth</span>
-            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">재사용 패턴</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">PRD</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">TRD</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">IA</span>
           </div>
         </div>
         <!-- Card 3 -->
@@ -791,7 +794,7 @@ tailwind.config = {
 
 <!-- Nav hint -->
 <div class="nav-hint">
-  <i class="fas fa-keyboard mr-1"></i> <span class="hidden md:inline">Arrow Keys</span> / Click
+  <span id="navPageNum"></span> &nbsp;&middot;&nbsp; <i class="fas fa-keyboard mr-1"></i> Arrow Keys / Click
 </div>
 
 <script>
@@ -811,6 +814,7 @@ slides.forEach((_, i) => {
 function updateProgress() {
   const pct = ((currentSlide + 1) / totalSlides) * 100;
   document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('navPageNum').textContent = (currentSlide + 1) + ' / ' + totalSlides;
 }
 
 function updateDots() {

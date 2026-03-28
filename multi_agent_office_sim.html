@@ -5,7 +5,7 @@ body { font-family: 'Pretendard', sans-serif; }
 
 #sim { width: 100%; background: #f8fafc; border-radius: 12px; overflow: hidden; position: relative; user-select: none; }
 
-#office { position: relative; width: 100%; height: 300px; background: #f0ede8; border-bottom: 2px solid #e2e8f0; overflow: hidden; }
+#office { position: relative; width: 100%; height: 360px; background: #f0ede8; border-bottom: 2px solid #e2e8f0; overflow: hidden; }
 
 .desk { position: absolute; border-radius: 6px; }
 .desk-planner { left: 15px; top: 75px; width: 80px; height: 50px; background: #d4c5a9; border: 1.5px solid #b8a88a; }
@@ -23,24 +23,27 @@ body { font-family: 'Pretendard', sans-serif; }
 
 .agent { position: absolute; width: 36px; height: 48px; cursor: pointer; transition: filter 0.2s; z-index: 10; }
 .agent:hover { filter: brightness(1.1); }
+.agent.active-glow { filter: brightness(1.15); }
+.agent.active-glow .head { box-shadow: 0 0 12px 4px rgba(255,200,50,0.6); }
+.agent.active-glow .name-tag { background: rgba(255,240,180,0.95); font-weight: 700; }
 .agent-body { position: relative; }
 .head { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto; position: relative; border: 2px solid rgba(0,0,0,0.15); }
 .torso { width: 28px; height: 20px; border-radius: 6px 6px 2px 2px; margin: 1px auto 0; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
 .icon { font-size: 9px; }
-.name-tag { font-size: 7px; color: #64748b; text-align: center; margin-top: 2px; font-weight: 500; white-space: nowrap; }
+.name-tag { font-size: 8px; color: #475569; text-align: center; margin-top: 3px; font-weight: 600; white-space: nowrap; line-height: 1.4; background: rgba(255,255,255,0.85); border-radius: 4px; padding: 1px 4px; }
 
 #orchestrator .head { background: #E8593C; width: 28px; height: 28px; }
 #orchestrator .torso { width: 32px; height: 20px; background: #c94520; }
 #planner .head { background: #3B8BD4; }
 #planner .torso { background: #185FA5; }
-#designer .head { background: #7F77DD; }
-#designer .torso { background: #534AB7; }
+#designer .head { background: #0891b2; }
+#designer .torso { background: #0e7490; }
 #developer .head { background: #639922; }
 #developer .torso { background: #3B6D11; }
 #qa .head { background: #e11d48; }
 #qa .torso { background: #be123c; }
-#rnd .head { background: #0891b2; }
-#rnd .torso { background: #0e7490; }
+#rnd .head { background: #7F77DD; }
+#rnd .torso { background: #534AB7; }
 
 .speech-bubble { position: absolute; background: white; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 5px 8px; font-size: 9px; color: #334155; white-space: normal; pointer-events: none; z-index: 20; box-shadow: 0 2px 6px rgba(0,0,0,0.08); opacity: 0; transition: opacity 0.3s; max-width: 140px; line-height: 1.4; }
 .speech-bubble.visible { opacity: 1; }
@@ -68,7 +71,7 @@ body { font-family: 'Pretendard', sans-serif; }
 .log-agent { font-weight: 600; margin-right: 4px; }
 .la-orc { color: #E8593C; }
 .la-pla { color: #3B8BD4; }
-.la-des { color: #7F77DD; }
+.la-des { color: #0891b2; }
 .la-dev { color: #639922; }
 .la-qa { color: #e11d48; }
 .log-time { color: #94a3b8; font-size: 9px; margin-right: 5px; }
@@ -97,14 +100,14 @@ body { font-family: 'Pretendard', sans-serif; }
     <div class="plant" style="left:15px"><div class="leaves"><div class="leaf"></div><div class="leaf"></div></div><div class="pot"></div></div>
 
     <!-- Orchestrator -->
-    <div class="agent" id="orchestrator" style="left:250px;top:185px">
+    <div class="agent" id="orchestrator" style="left:250px;top:210px">
       <div class="agent-body">
         <div class="head" style="border: 2px solid rgba(0,0,0,0.2);">
           <svg viewBox="0 0 24 24" style="width:16px;height:16px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg>
         </div>
         <div class="torso"><span class="icon">🎯</span></div>
       </div>
-      <div class="name-tag">오케스트레이터</div>
+      <div class="name-tag">오케스트레이터<br><span style="font-size:7px;color:#E8593C;font-weight:700;">이경희</span></div>
     </div>
 
     <!-- Planner -->
@@ -113,7 +116,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">📋</span></div>
       </div>
-      <div class="name-tag">기획자</div>
+      <div class="name-tag">기획자<br><span style="font-size:7px;color:#3B8BD4;font-weight:700;">이경자</span></div>
     </div>
 
     <!-- Designer -->
@@ -122,7 +125,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">🎨</span></div>
       </div>
-      <div class="name-tag">디자이너</div>
+      <div class="name-tag">디자이너<br><span style="font-size:7px;color:#0891b2;font-weight:700;">허차장</span></div>
     </div>
 
     <!-- Developer -->
@@ -131,7 +134,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">💻</span></div>
       </div>
-      <div class="name-tag">개발자</div>
+      <div class="name-tag">개발자<br><span style="font-size:7px;color:#639922;font-weight:700;">태희차장</span></div>
     </div>
 
     <!-- QA -->
@@ -140,7 +143,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">🔍</span></div>
       </div>
-      <div class="name-tag">QA</div>
+      <div class="name-tag">QA<br><span style="font-size:7px;color:#e11d48;font-weight:700;">지과장</span></div>
     </div>
 
     <!-- R&D -->
@@ -149,11 +152,11 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">📚</span></div>
       </div>
-      <div class="name-tag">R&D</div>
+      <div class="name-tag">R&D<br><span style="font-size:7px;color:#7F77DD;font-weight:700;">Evy</span></div>
     </div>
 
     <!-- Speech bubbles -->
-    <div class="speech-bubble" id="bubble-orc" style="left:210px;top:150px"></div>
+    <div class="speech-bubble" id="bubble-orc" style="left:210px;top:175px"></div>
     <div class="speech-bubble" id="bubble-pla" style="left:5px;top:95px"></div>
     <div class="speech-bubble" id="bubble-rnd" style="left:120px;top:95px"></div>
     <div class="speech-bubble" id="bubble-des" style="left:235px;top:95px"></div>
@@ -262,6 +265,14 @@ function addLog(who, color, name, text) {
   lp.scrollTop = lp.scrollHeight;
 }
 
+const agentNames = { orc:'이경희', pla:'이경자', rnd:'Evy', des:'허차장', dev:'태희차장', qa:'지과장' };
+const agentRoles = { orc:'오케스트레이터', pla:'기획자', rnd:'R&D', des:'디자이너', dev:'개발자', qa:'QA' };
+
+function glowAgent(who) {
+  Object.values(agents).forEach(a => a.classList.remove('active-glow'));
+  if (who && agents[who]) agents[who].classList.add('active-glow');
+}
+
 function shake(el) {
   let x = 0;
   const orig = parseInt(el.style.left);
@@ -278,113 +289,124 @@ function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 const steps = [
   async () => {
     document.getElementById('status-text').textContent = '1/10 — 오케스트레이터가 작업 분석 중...';
+    glowAgent('orc');
     shake(agents.orc);
     await showBubble('orc', '📊 새 게임 콘텐츠 개발 시작! 작업을 분배할게요.', 2000);
-    addLog('orc','#E8593C','오케스트레이터','새 게임 콘텐츠 개발 수신. 에이전트 팀에 작업 분배 시작');
+    addLog('orc','#E8593C','이경희(오케스트레이터)','새 게임 콘텐츠 개발 수신. 에이전트 팀에 작업 분배 시작');
   },
   async () => {
     document.getElementById('status-text').textContent = '2/10 — 기획자에게 PRD 작성 위임...';
+    glowAgent('pla');
     await moveAgent(agents.orc, 150, 190);
     await sendPacket(agents.orc, agents.pla, '📋', '#dbeafe','#3B8BD4');
     await showBubble('orc', '기획자님, PRD 작성 부탁드려요!', 1500);
-    addLog('orc','#E8593C','오케스트레이터','→ 기획자에게 "PRD 작성 및 요구사항 정리" 위임');
+    addLog('orc','#E8593C','이경희(오케스트레이터)','→ 기획자에게 "PRD 작성 및 요구사항 정리" 위임');
     await wait(200);
     shake(agents.pla);
     await showBubble('pla','PRD 작성 및 업그레이드 시작합니다!', 1500);
-    addLog('pla','#3B8BD4','기획자','PRD 작성 작업 수신. 작업 시작');
+    addLog('pla','#3B8BD4','이경자(기획자)','PRD 작성 작업 수신. 작업 시작');
   },
   async () => {
     document.getElementById('status-text').textContent = '3/10 — 기획자 ↔ R&D 협업 중...';
+    glowAgent('rnd');
     await sendPacket(agents.pla, agents.rnd, '📄', '#cffafe','#0891b2');
     await showBubble('pla', 'R&D님, PRD 교육 효과 검증 부탁드려요!', 1500);
-    addLog('pla','#3B8BD4','기획자','→ R&D에게 PRD 교육적 효과 검증 요청');
+    addLog('pla','#3B8BD4','이경자(기획자)','→ R&D에게 PRD 교육적 효과 검증 요청');
     await wait(300);
     shake(agents.rnd);
     await showBubble('rnd', 'CEFR 기준 확인 후 피드백 드릴게요!', 1500);
-    addLog('rnd','#0891b2','R&D','PRD 검토 시작. CEFR 난이도 기준 적용');
+    addLog('rnd','#7F77DD','Evy(R&D)','PRD 검토 시작. CEFR 난이도 기준 적용');
     await wait(300);
     await sendPacket(agents.rnd, agents.pla, '✏️', '#dbeafe','#3B8BD4');
     await showBubble('rnd', '난이도 조정 피드백 완료!', 1200);
-    addLog('rnd','#0891b2','R&D','→ 기획자에게 난이도 조정 피드백 전달');
+    addLog('rnd','#7F77DD','Evy(R&D)','→ 기획자에게 난이도 조정 피드백 전달');
     await showBubble('pla', '피드백 반영! PRD 업데이트합니다.', 1200);
-    addLog('pla','#3B8BD4','기획자','R&D 피드백 반영하여 PRD 업데이트');
+    addLog('pla','#3B8BD4','이경자(기획자)','R&D 피드백 반영하여 PRD 업데이트');
   },
   async () => {
     document.getElementById('status-text').textContent = '4/10 — 디자이너에게 화면 설계 위임...';
+    glowAgent('des');
     await moveAgent(agents.orc, 250, 185);
     await sendPacket(agents.orc, agents.des, '🎨', '#ede9fe','#7F77DD');
     await showBubble('orc', '디자이너님, 화면 스케일 적용해 주세요!', 1500);
-    addLog('orc','#E8593C','오케스트레이터','→ 디자이너에게 "화면 스케일 및 디자인 규정" 위임');
+    addLog('orc','#E8593C','이경희(오케스트레이터)','→ 디자이너에게 "화면 스케일 및 디자인 규정" 위임');
     await wait(200);
     shake(agents.des);
     await showBubble('des', '공통 디자인 규정 적용 시작! 🎨', 1500);
-    addLog('des','#7F77DD','디자이너','화면 스케일 및 디자인 규정 작업 시작');
+    addLog('des','#0891b2','허차장(디자이너)','화면 스케일 및 디자인 규정 작업 시작');
   },
   async () => {
     document.getElementById('status-text').textContent = '5/10 — 개발자에게 엔진 연동 위임...';
+    glowAgent('dev');
     await moveAgent(agents.orc, 320, 190);
     await sendPacket(agents.orc, agents.dev, '💻', '#dcfce7','#639922');
     await showBubble('orc', '개발자님, Whisper 연동과 JWT 작업 부탁해요!', 1800);
-    addLog('orc','#E8593C','오케스트레이터','→ 개발자에게 "Whisper 연동, 리뷰 팝업, JWT" 위임');
+    addLog('orc','#E8593C','이경희(오케스트레이터)','→ 개발자에게 "Whisper 연동, 리뷰 팝업, JWT" 위임');
     await wait(200);
     shake(agents.dev);
     await showBubble('dev', 'Whisper 엔진 연동 시작합니다! 💻', 1500);
-    addLog('dev','#639922','개발자','Whisper 연동, 리뷰 팝업, JWT 작업 시작');
+    addLog('dev','#639922','태희차장(개발자)','Whisper 연동, 리뷰 팝업, JWT 작업 시작');
   },
   async () => {
     document.getElementById('status-text').textContent = '6/10 — QA에게 검수 위임...';
+    glowAgent('qa');
     await moveAgent(agents.orc, 370, 185);
     await sendPacket(agents.orc, agents.qa, '🔍', '#ffe4e6','#e11d48');
     await showBubble('orc', 'QA님, 개발 검수와 디바이스 테스트 준비해 주세요!', 1800);
-    addLog('orc','#E8593C','오케스트레이터','→ QA에게 "개발 검수 및 디바이스별 테스트" 위임');
+    addLog('orc','#E8593C','이경희(오케스트레이터)','→ QA에게 "개발 검수 및 디바이스별 테스트" 위임');
     await wait(200);
     shake(agents.qa);
     await showBubble('qa', '체크리스트 작성하고 검수 준비 중! 🔍', 1500);
-    addLog('qa','#e11d48','QA','개발 검수 및 디바이스별 테스트 준비 시작');
+    addLog('qa','#e11d48','지과장(QA)','개발 검수 및 디바이스별 테스트 준비 시작');
   },
   async () => {
     document.getElementById('status-text').textContent = '7/10 — R&D에게 교육 검증 위임...';
+    glowAgent('rnd');
     await moveAgent(agents.orc, 450, 185);
     await sendPacket(agents.orc, agents.rnd, '📚', '#cffafe','#0891b2');
     await showBubble('orc', 'R&D님, 교육 효과 검증과 영문 검수 부탁드려요!', 1800);
-    addLog('orc','#E8593C','오케스트레이터','→ R&D에게 "교육 효과·CEFR 난이도·영문 검수" 위임');
+    addLog('orc','#E8593C','이경희(오케스트레이터)','→ R&D에게 "교육 효과·CEFR 난이도·영문 검수" 위임');
     await wait(200);
     shake(agents.rnd);
     await showBubble('rnd', 'CEFR 기준 난이도 검증 시작합니다! 📚', 1500);
-    addLog('rnd','#0891b2','R&D','교육적 효과 검증, CEFR 난이도 검증, 영문 검수 시작');
+    addLog('rnd','#7F77DD','Evy(R&D)','교육적 효과 검증, CEFR 난이도 검증, 영문 검수 시작');
   },
   async () => {
     document.getElementById('status-text').textContent = '8/10 — 기획·디자인·개발 결과 보고...';
+    glowAgent('orc');
     await moveAgent(agents.orc, 250, 185);
     await Promise.all([
       sendPacket(agents.pla, agents.orc, '✅', '#dbeafe','#3B8BD4'),
       wait(200).then(() => sendPacket(agents.des, agents.orc, '✅', '#ede9fe','#7F77DD')),
       wait(400).then(() => sendPacket(agents.dev, agents.orc, '✅', '#dcfce7','#639922')),
     ]);
-    addLog('pla','#3B8BD4','기획자','PRD 작성 완료 → 보고');
-    addLog('des','#7F77DD','디자이너','디자인 규정 적용 완료 → 보고');
-    addLog('dev','#639922','개발자','Whisper 연동·JWT·리뷰 팝업 완료 → 보고');
+    addLog('pla','#3B8BD4','이경자(기획자)','PRD 작성 완료 → 보고');
+    addLog('des','#0891b2','허차장(디자이너)','디자인 규정 적용 완료 → 보고');
+    addLog('dev','#639922','태희차장(개발자)','Whisper 연동·JWT·리뷰 팝업 완료 → 보고');
     await showBubble('orc', '기획·디자인·개발 완료! QA·R&D 대기...', 1500);
   },
   async () => {
     document.getElementById('status-text').textContent = '9/10 — QA·R&D 결과 보고...';
+    glowAgent('orc');
     await Promise.all([
       sendPacket(agents.qa, agents.orc, '✅', '#ffe4e6','#e11d48'),
       wait(300).then(() => sendPacket(agents.rnd, agents.orc, '✅', '#cffafe','#0891b2')),
     ]);
-    addLog('qa','#e11d48','QA','디바이스별 검수 완료, 체크리스트 제출 → 보고');
-    addLog('rnd','#0891b2','R&D','CEFR 검증 완료, 영문 최종 검수 완료 → 보고');
+    addLog('qa','#e11d48','지과장(QA)','디바이스별 검수 완료, 체크리스트 제출 → 보고');
+    addLog('rnd','#7F77DD','Evy(R&D)','CEFR 검증 완료, 영문 최종 검수 완료 → 보고');
     await showBubble('orc', '모든 에이전트 완료! 결과 취합 중...', 1500);
   },
   async () => {
     document.getElementById('status-text').textContent = '10/10 — 오케스트레이터 통합 완료!';
+    glowAgent('orc');
     shake(agents.orc);
-    addLog('orc','#E8593C','오케스트레이터','모든 에이전트 팀 결과 수신. 개발 통합 완료 ✅');
+    addLog('orc','#E8593C','이경희(오케스트레이터)','모든 에이전트 팀 결과 수신. 개발 통합 완료 ✅');
     await showBubble('orc', '🎉 개발 완료! 모든 작업이 통합되었습니다', 2500);
+    glowAgent(null);
     document.getElementById('start-btn').textContent = '↺ 다시 시작';
     document.getElementById('step-indicator').textContent = '';
     running = false; stepIdx = 0;
-    agents.orc.style.left = '250px'; agents.orc.style.top = '185px';
+    agents.orc.style.left = '250px'; agents.orc.style.top = '210px';
   }
 ];
 
@@ -392,7 +414,7 @@ async function startSim() {
   if (running) return;
   if (stepIdx === 0) {
     document.getElementById('log-entries').innerHTML = '';
-    agents.orc.style.left = '250px'; agents.orc.style.top = '185px';
+    agents.orc.style.left = '250px'; agents.orc.style.top = '210px';
   }
   running = true;
   document.getElementById('start-btn').textContent = '⏳ 진행 중...';
