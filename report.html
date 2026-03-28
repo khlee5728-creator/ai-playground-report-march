@@ -691,7 +691,20 @@ tailwind.config = {
             <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">Skill.md</span>
           </div>
         </div>
-        <!-- Card 2 -->
+        <!-- Card 2: Multi-Agent -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#059669;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-sitemap"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">Multi-Agent 오케스트레이션</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">기획/개발/디자인 에이전트가 오케스트레이터 아래 협업. 각 에이전트가 전문 영역을 자율 처리하고 결과를 통합</p>
+          <div class="mt-3">
+            <button class="sim-btn w-full justify-center" onclick="openSimModal()">
+              <i class="fas fa-play"></i> 시뮬레이션 시작
+            </button>
+          </div>
+        </div>
+        <!-- Card 3 -->
         <div class="glass p-5 hover-card flex flex-col">
           <div class="flex items-center gap-3 mb-3">
             <div style="width:44px;height:44px;border-radius:12px;background:#d97706;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-file-code"></i></div>
@@ -704,28 +717,15 @@ tailwind.config = {
             <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">IA</span>
           </div>
         </div>
-        <!-- Card 3 -->
+        <!-- Card 4 -->
         <div class="glass p-5 hover-card flex flex-col">
           <div class="flex items-center gap-3 mb-3">
             <div style="width:44px;height:44px;border-radius:12px;background:#9333ea;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-user-astronaut"></i></div>
             <h3 class="text-slate-800 font-bold text-base">T-Shaped 1인 풀스택</h3>
           </div>
-          <p class="text-slate-500 text-sm leading-relaxed flex-1">기획 &middot; 디자인 &middot; 개발을 AI 도구와 함께 1인이 수행. 커뮤니케이션 비용 제로, 의사결정 속도 극대화</p>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">기획 &middot; 디자인 &middot; 개발을 AI 도구와 함께 1인이 수행. 커뮤니케이션 비용 최소화, 의사결정 속도 극대화</p>
           <div class="mt-3 flex flex-wrap gap-1">
-            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">기획→디자인→개발</span>
-          </div>
-        </div>
-        <!-- Card 4: Multi-Agent -->
-        <div class="glass p-5 hover-card flex flex-col">
-          <div class="flex items-center gap-3 mb-3">
-            <div style="width:44px;height:44px;border-radius:12px;background:#059669;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-sitemap"></i></div>
-            <h3 class="text-slate-800 font-bold text-base">Multi-Agent 오케스트레이션</h3>
-          </div>
-          <p class="text-slate-500 text-sm leading-relaxed flex-1">기획/개발/디자인 에이전트가 오케스트레이터 아래 협업. 각 에이전트가 전문 영역을 자율 처리하고 결과를 통합</p>
-          <div class="mt-3">
-            <button class="sim-btn w-full justify-center" onclick="openSimModal()">
-              <i class="fas fa-play"></i> 시뮬레이션 시작
-            </button>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">1인 = 기획 + 디자인 + 개발</span>
           </div>
         </div>
       </div>
