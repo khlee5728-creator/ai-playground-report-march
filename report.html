@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Playground - 신규 게임 4종 런칭 개발 보고서</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Pretendard', 'sans-serif'] },
+      colors: {
+        primary: '#6366f1',
+        emerald: '#10b981',
+        amber: '#f59e0b',
+        purple: '#a855f7',
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pretendard', sans-serif; background: #ffffff; overflow: hidden; height: 100vh; }
+
+  /* Slide container */
+  .slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: translateX(60px); padding: 40px 48px; }
+  .slide.active { opacity: 1; pointer-events: auto; transform: translateX(0); z-index: 10; }
+  .slide.prev { opacity: 0; transform: translateX(-60px); }
+
+  /* Light card */
+  .glass { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; }
+
+  /* Gradient text */
+  .gradient-text { background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  /* Progress bar */
+  .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #6366f1, #a855f7); transition: width 0.4s ease; z-index: 100; }
+
+  /* Nav */
+  .nav-hint { position: fixed; bottom: 20px; right: 20px; z-index: 100; color: #94a3b8; font-size: 13px; }
+  .page-indicator { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 8px; }
+  .page-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; cursor: pointer; transition: all 0.3s; }
+  .page-dot.active { background: #6366f1; width: 24px; border-radius: 4px; }
+
+  /* Flow step */
+  .flow-step { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #f1f5f9; border-radius: 12px; margin-bottom: 6px; }
+  .flow-step div { font-size: 14px !important; line-height: 1.45 !important; }
+  .flow-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: white; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); background: #6366f1; }
+  .flow-num.num-emerald { background: #047857; }
+  .flow-num.num-amber { background: #d97706; }
+  .flow-num.num-rose { background: #be123c; }
+  .flow-num.num-purple { background: #7e22ce; }
+
+  /* Image grid */
+  .img-grid { display: grid; gap: 8px; }
+  .img-grid img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 1px solid #e2e8f0; }
+
+  /* Character tab cards */
+  .char-tab { transition: all 0.3s ease; border-left: 3px solid transparent; }
+  .char-tab:hover { transform: translateX(4px); }
+  .char-tab.active { border-left-color: var(--tab-color); background: var(--tab-bg) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .char-panel { display: none; }
+  .char-panel.active { display: block; }
+  .char-panel .img-carousel { aspect-ratio: 4 / 3; background: #f1f5f9; }
+  .char-panel .img-carousel img { object-fit: contain !important; padding: 8px; }
+  .char-panel .img-carousel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.4s ease; background: #000; }
+  .char-panel .img-carousel video.active { opacity: 1; }
+
+  /* Image carousel */
+  .img-carousel { position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; background: #f8fafc; }
+  .img-carousel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s ease; }
+  .img-carousel img.active { opacity: 1; }
+  .carousel-label { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: white; z-index: 5; }
+  .carousel-label.label-emerald { background: rgba(5,150,105,0.9); }
+  .carousel-label.label-amber { background: rgba(217,119,6,0.9); }
+  .carousel-label.label-rose { background: rgba(225,29,72,0.9); }
+  .carousel-label.label-purple { background: rgba(147,51,234,0.9); }
+  .carousel-nav { position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 10px; background: linear-gradient(transparent, rgba(0,0,0,0.5)); z-index: 5; }
+  .carousel-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.9); color: #334155; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .carousel-btn:hover { background: white; transform: scale(1.1); }
+  .carousel-indicator { color: white; font-size: 13px; font-weight: 600; min-width: 80px; text-align: center; }
+
+  /* Value badge */
+  .value-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+
+  /* Educational Value bar */
+  .edu-bar { border-radius: 12px; padding: 10px 16px; border-left: 4px solid; }
+  .edu-bar .edu-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .edu-emerald { background: #ecfdf5; border-color: #059669; }
+  .edu-emerald .edu-label { color: #059669; }
+  .edu-amber { background: #fffbeb; border-color: #d97706; }
+  .edu-amber .edu-label { color: #d97706; }
+  .edu-rose { background: #fff1f2; border-color: #e11d48; }
+  .edu-rose .edu-label { color: #e11d48; }
+  .edu-purple { background: #faf5ff; border-color: #9333ea; }
+  .edu-purple .edu-label { color: #9333ea; }
+
+  /* Hover card */
+  .hover-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .hover-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 20px; }
+    .slide-content { transform: scale(0.85); transform-origin: center center; }
+  }
+
+  /* Thumb image */
+  .thumb-card { position: relative; overflow: hidden; border-radius: 16px; cursor: default; }
+  .thumb-card img { width: 100%; height: 160px; object-fit: cover; transition: transform 0.4s; }
+  .thumb-card:hover img { transform: scale(1.05); }
+  .thumb-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 16px; background: linear-gradient(transparent, rgba(0,0,0,0.7)); }
+
+  /* Keyframe */
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .float { animation: float 3s ease-in-out infinite; }
+  .fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+
+  /* Readability overrides */
+  .slide h3.text-xs { font-size: 12px !important; letter-spacing: 0.08em !important; }
+
+  /* Slide header icon */
+  .slide-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); flex-shrink: 0; }
+  .icon-emerald { background: #059669; }
+  .icon-amber { background: #d97706; }
+  .icon-rose { background: #e11d48; }
+  .icon-purple { background: #9333ea; }
+
+  /* Slide page number */
+  .slide-page-num { position: absolute; bottom: 20px; right: 140px; font-size: 12px; color: #94a3b8; font-weight: 500; z-index: 20; }
+
+  /* PDF save button */
+  .pdf-btn { position: fixed; top: 20px; right: 20px; z-index: 200; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 16px; color: #64748b; font-size: 13px; font-family: 'Pretendard', sans-serif; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .pdf-btn:hover { background: #f8fafc; color: #6366f1; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+  /* Simulation modal */
+  .sim-modal { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .sim-modal.open { display: flex; }
+  .sim-modal-content { position: relative; width: 90vw; height: 85vh; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.3); }
+  .sim-modal-close { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(0,0,0,0.1); color: #334155; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.2s; }
+  .sim-modal-close:hover { background: rgba(0,0,0,0.2); }
+  .sim-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: 12px; border: 2px dashed #059669; background: #f0fdf4; color: #059669; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: 'Pretendard', sans-serif; }
+  .sim-btn:hover { background: #059669; color: white; border-style: solid; }
+
+  /* Print styles */
+  @media print {
+    /* Color preservation */
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    /* Disable all animations */
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .fade-in-up { opacity: 1 !important; transform: none !important; }
+
+    /* Layout reset */
+    body { overflow: visible !important; height: auto !important; background: #ffffff !important; }
+    .slide-deck { overflow: visible !important; height: auto !important; }
+
+    /* Each slide = exactly 1 landscape page */
+    .slide { position: relative !important; opacity: 1 !important; pointer-events: auto !important; transform: none !important; display: flex !important; width: 100vw; height: 100vh; max-height: 100vh; overflow: hidden; page-break-after: always; break-after: page; page-break-inside: avoid; break-inside: avoid; padding: 24px 40px !important; box-sizing: border-box; }
+    .slide.prev { opacity: 1 !important; transform: none !important; }
+    .slide:last-child { page-break-after: avoid; }
+
+    /* Hide UI elements */
+    .pdf-btn, .progress-bar, .page-indicator, .nav-hint, .carousel-nav, .sim-modal { display: none !important; }
+    .hover-card:hover { transform: none; box-shadow: none; }
+    .thumb-card:hover img { transform: none; }
+    .slide-page-num { display: block !important; }
+
+    /* Carousel: preserve aspect ratio, show only active image */
+    .img-carousel { aspect-ratio: 16 / 10 !important; width: 100% !important; max-height: 280px; overflow: hidden !important; position: relative !important; }
+    .img-carousel img, .img-carousel video { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; display: none !important; }
+    .img-carousel img.active, .img-carousel video.active { display: block !important; opacity: 1 !important; object-fit: contain !important; }
+
+    /* Character slide: show only active panel */
+    .char-panel { display: none !important; }
+    .char-panel.active { display: block !important; }
+    .char-panel .img-carousel { aspect-ratio: 4 / 3 !important; max-height: 260px; }
+    .char-tab { border-left-color: var(--tab-color) !important; }
+
+    /* Print size reductions */
+    .slide h2, .slide .text-3xl { font-size: 22px !important; }
+    .slide .text-2xl { font-size: 18px !important; }
+    .flow-step { padding: 6px 12px !important; margin-bottom: 3px !important; }
+    .flow-step div { font-size: 12px !important; line-height: 1.3 !important; }
+    .flow-num { width: 26px !important; height: 26px !important; font-size: 12px !important; }
+    .edu-bar { padding: 6px 12px !important; margin-top: 6px !important; }
+    .value-badge { font-size: 10px !important; padding: 2px 6px !important; }
+    .grid.gap-5 { gap: 10px !important; }
+    .mb-4 { margin-bottom: 8px !important; }
+    .mb-10 { margin-bottom: 12px !important; }
+
+    /* Force Tailwind responsive grids in print */
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+
+    @page { size: landscape; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-deck" id="deck">
+
+  <!-- ========== SLIDE 1: 표지 ========== -->
+  <div class="slide active" data-bg="linear-gradient(135deg, #ffffff 0%, #eef2ff 50%, #e0e7ff 100%)">
+    <div class="text-center max-w-3xl">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-8 fade-in-up">
+        <i class="fas fa-rocket"></i> 2026년 3월 정식 런칭
+      </div>
+      <h1 class="text-5xl md:text-7xl font-black mb-6 fade-in-up" style="animation-delay:0.1s">
+        <span class="gradient-text">AI Playground</span>
+      </h1>
+      <h2 class="text-2xl md:text-3xl text-slate-800 font-bold mb-4 fade-in-up" style="animation-delay:0.2s">
+        신규 게임 4종 런칭 개발 보고서
+      </h2>
+      <p class="text-slate-500 text-lg mb-12 fade-in-up" style="animation-delay:0.3s">
+        AI 기술의 게이미피케이션 &middot; 사용자 참여형 개발 &middot; 1인 풀스택
+      </p>
+      <div class="flex items-center justify-center gap-6 text-slate-400 text-sm fade-in-up" style="animation-delay:0.4s">
+        <span><i class="far fa-calendar-alt mr-2"></i>2026. 03. 30</span>
+        <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+        <span><i class="far fa-user mr-2"></i>AI Playground 개발팀</span>
+      </div>
+      <div class="mt-16 text-slate-300 text-sm fade-in-up" style="animation-delay:0.6s">
+        <i class="fas fa-arrow-right animate-pulse"></i> 클릭 또는 방향키로 넘기기
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 2: 목차 & 핵심 요약 ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #f8fafc)" style="align-items:flex-start !important;padding-top:32px !important;">
+    <div class="slide-page-num">2 / 10</div>
+    <div class="w-full max-w-4xl">
+      <div class="text-center mb-3">
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-1">신규 런칭 게임 <span class="gradient-text">4종</span> 한눈에 보기</h2>
+        <p class="text-slate-500 text-xs">초등학생 대상 AI 기반 영어 학습 게임</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <!-- Treasure Hunter -->
+        <div class="relative rounded-2xl overflow-hidden hover-card" style="aspect-ratio:2.2/1;">
+          <img src="thumnail/thumb_treasure.jpeg" alt="Treasure Hunter" class="w-full h-full object-cover">
+          <div class="absolute inset-0 flex flex-col justify-end p-3" style="background:linear-gradient(transparent 30%, rgba(0,0,0,0.75));">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="slide-icon icon-emerald" style="width:22px;height:22px;font-size:10px;border-radius:6px;box-shadow:none;"><i class="fas fa-gem"></i></div>
+              <h3 class="text-sm font-bold text-white">Treasure Hunter</h3>
+            </div>
+            <p class="text-white/80 text-xs mb-1">"받아쓰기를 완성하고, 그림 속에 숨겨진 보물을 찾아보세요!"</p>
+            <div class="flex gap-1">
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">LLM</span>
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">Image Gen</span>
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">TTS</span>
+            </div>
+          </div>
+        </div>
+        <!-- Find Your Hero -->
+        <div class="relative rounded-2xl overflow-hidden hover-card" style="aspect-ratio:2.2/1;">
+          <img src="thumnail/thumb_hero.jpg" alt="Find Your Hero" class="w-full h-full object-cover">
+          <div class="absolute inset-0 flex flex-col justify-end p-3" style="background:linear-gradient(transparent 30%, rgba(0,0,0,0.75));">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="slide-icon icon-amber" style="width:22px;height:22px;font-size:10px;border-radius:6px;box-shadow:none;"><i class="fas fa-mask"></i></div>
+              <h3 class="text-sm font-bold text-white">Find Your Hero</h3>
+            </div>
+            <p class="text-white/80 text-xs mb-1">"MBTI 검사로 나와 꼭 닮은 히어로를 확인해 보세요."</p>
+            <div class="flex gap-1">
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">LLM</span>
+            </div>
+          </div>
+        </div>
+        <!-- Voice Actor -->
+        <div class="relative rounded-2xl overflow-hidden hover-card" style="aspect-ratio:2.2/1;">
+          <img src="thumnail/thumb_voice.png" alt="Voice Actor" class="w-full h-full object-cover">
+          <div class="absolute inset-0 flex flex-col justify-end p-3" style="background:linear-gradient(transparent 30%, rgba(0,0,0,0.75));">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="slide-icon icon-rose" style="width:22px;height:22px;font-size:10px;border-radius:6px;box-shadow:none;"><i class="fas fa-microphone"></i></div>
+              <h3 class="text-sm font-bold text-white">Voice Actor</h3>
+            </div>
+            <p class="text-white/80 text-xs mb-1">"영상 속 주인공이 되어 멋지게 목소리 연기를 해보세요!"</p>
+            <div class="flex gap-1">
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">STT</span>
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">TTS</span>
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">LLM</span>
+            </div>
+          </div>
+        </div>
+        <!-- Magic Fortune English -->
+        <div class="relative rounded-2xl overflow-hidden hover-card" style="aspect-ratio:2.2/1;">
+          <img src="thumnail/thumb_fortune.jpg" alt="Magic Fortune English" class="w-full h-full object-cover">
+          <div class="absolute inset-0 flex flex-col justify-end p-3" style="background:linear-gradient(transparent 30%, rgba(0,0,0,0.75));">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="slide-icon icon-purple" style="width:22px;height:22px;font-size:10px;border-radius:6px;box-shadow:none;"><i class="fas fa-hat-wizard"></i></div>
+              <h3 class="text-sm font-bold text-white">Magic Fortune English</h3>
+            </div>
+            <p class="text-white/80 text-xs mb-1">"포춘 쿠키와 타로 카드로 나의 행운을 점쳐보세요."</p>
+            <div class="flex gap-1">
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">LLM</span>
+              <span class="text-xs px-1.5 py-0.5 rounded-full bg-white/20 text-white/90">TTS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 3: Treasure Hunter ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #ecfdf5)">
+    <div class="slide-page-num">3 / 10</div>
+    <div class="w-full max-w-5xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="slide-icon icon-emerald">
+          <i class="fas fa-gem"></i>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-slate-800">Treasure Hunter</h2>
+          <p class="text-emerald-600 text-sm">받아쓰기 + AI 이미지 생성 + 보물 찾기</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Activity Flow</h3>
+          <div class="flow-step"><div class="flow-num num-emerald">1</div><div class="text-slate-700 text-sm"><strong class="text-emerald-700">Dictation</strong> &mdash; 오디오를 듣고 문장을 타이핑하여 완성 (레벤슈타인 거리 기반 단계별 피드백)</div></div>
+          <div class="flow-step"><div class="flow-num num-emerald">2</div><div class="text-slate-700 text-sm"><strong class="text-emerald-700">AI Generation</strong> &mdash; 완성된 문장 기반 AI 실시간 이미지 생성</div></div>
+          <div class="flow-step"><div class="flow-num num-emerald">3</div><div class="text-slate-700 text-sm"><strong class="text-emerald-700">Hidden Object</strong> &mdash; 생성된 이미지에서 보물 영역 탐색 + 방향 힌트 가이드 제공</div></div>
+          <div class="flow-step"><div class="flow-num num-emerald">4</div><div class="text-slate-700 text-sm"><strong class="text-emerald-700">Certificate</strong> &mdash; 탐험 인증서 발급, AI 생성 이미지로 구성된 학습 결과 소장</div></div>
+        </div>
+        <div class="img-carousel" data-color="emerald">
+          <img src="treasure hunter/treasure hunter1.png" alt="Dictation" class="active">
+          <img src="treasure hunter/treasure hunter2.png" alt="AI Generation">
+          <img src="treasure hunter/treasure hunter3.png" alt="Hidden Object">
+          <img src="treasure hunter/treasure hunter4.png" alt="Exploration Certificate">
+          <div class="carousel-nav">
+            <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <span class="carousel-indicator">1 / 4</span>
+            <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="edu-bar edu-emerald mt-3">
+        <div class="edu-label"><i class="fas fa-graduation-cap mr-1"></i>Educational Value</div>
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#047857;"><i class="fas fa-headphones mr-1"></i>Listening</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#047857;"><i class="fas fa-pen mr-1"></i>Writing</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#047857;"><i class="fas fa-eye mr-1"></i>시각적 피드백</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#047857;"><i class="fas fa-brain mr-1"></i>통합 학습</span>
+          </div>
+          <div class="text-slate-500 text-xs flex items-center gap-1 flex-shrink-0"><i class="fas fa-microchip"></i> LLM &middot; Image Gen &middot; TTS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 4: Find Your Hero ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #fffbeb)">
+    <div class="slide-page-num">4 / 10</div>
+    <div class="w-full max-w-5xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="slide-icon icon-amber">
+          <i class="fas fa-mask"></i>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-slate-800">Find Your Hero</h2>
+          <p class="text-amber-600 text-sm">MBTI 검사 + 마블 히어로 매칭 + 어휘 학습</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Activity Flow</h3>
+          <div class="flow-step"><div class="flow-num num-amber">1</div><div class="text-slate-700 text-sm"><strong class="text-amber-700">Dynamic Questioning</strong> &mdash; AI가 16개 MBTI 문항을 매번 새롭게 생성</div></div>
+          <div class="flow-step"><div class="flow-num num-amber">2</div><div class="text-slate-700 text-sm"><strong class="text-amber-700">Quiz</strong> &mdash; 객관식 문항을 풀어나가며 성향 분석</div></div>
+          <div class="flow-step"><div class="flow-num num-amber">3</div><div class="text-slate-700 text-sm"><strong class="text-amber-700">Hero Matching</strong> &mdash; MBTI 결과에 맞는 마블 히어로 매칭</div></div>
+          <div class="flow-step"><div class="flow-num num-amber">4</div><div class="text-slate-700 text-sm"><strong class="text-amber-700">Analysis</strong> &mdash; 히어로 성격 영어 형용사 3개 학습</div></div>
+        </div>
+        <div class="img-carousel" data-color="amber">
+          <img src="find your hero/image/find your hero1.png" alt="Dynamic Questioning" class="active">
+          <img src="find your hero/image/find your hero2.png" alt="Hero Matching">
+          <img src="find your hero/image/find your hero3.png" alt="Hero Gallery">
+          <div class="carousel-nav">
+            <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <span class="carousel-indicator">1 / 3</span>
+            <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="edu-bar edu-amber mt-3">
+        <div class="edu-label"><i class="fas fa-graduation-cap mr-1"></i>Educational Value</div>
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#d97706;"><i class="fas fa-book-open mr-1"></i>Reading</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#d97706;"><i class="fas fa-redo mr-1"></i>반복 학습</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#d97706;"><i class="fas fa-spell-check mr-1"></i>어휘 확장</span>
+          </div>
+          <div class="text-slate-500 text-xs flex items-center gap-1 flex-shrink-0"><i class="fas fa-lightbulb text-amber-600"></i> User-Driven &middot; LLM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 5: Voice Actor ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #fff1f2)">
+    <div class="slide-page-num">5 / 10</div>
+    <div class="w-full max-w-5xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="slide-icon icon-rose">
+          <i class="fas fa-microphone"></i>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-slate-800">Voice Actor</h2>
+          <p class="text-rose-600 text-sm">영화/애니메이션 더빙 체험 + AI 음성 분석</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Activity Flow</h3>
+          <div class="flow-step"><div class="flow-num num-rose">1</div><div class="text-slate-700 text-sm"><strong class="text-rose-700">Selection</strong> &mdash; 더빙하고 싶은 영화/애니메이션 클립 선택</div></div>
+          <div class="flow-step"><div class="flow-num num-rose">2</div><div class="text-slate-700 text-sm"><strong class="text-rose-700">Role Play</strong> &mdash; 캐릭터 선택 및 대본(원고) 확인</div></div>
+          <div class="flow-step"><div class="flow-num num-rose">3</div><div class="text-slate-700 text-sm"><strong class="text-rose-700">Recording</strong> &mdash; 영상 재생과 동시에 실시간 녹음</div></div>
+          <div class="flow-step"><div class="flow-num num-rose">4</div><div class="text-slate-700 text-sm"><strong class="text-rose-700">Review & Report</strong> &mdash; 더빙 결과 + AI 분석 리포트 확인</div></div>
+        </div>
+        <div class="img-carousel" data-color="rose">
+          <img src="voice actor/voice actor1.png" alt="Selection" class="active">
+          <img src="voice actor/voice actor2.png" alt="Role Play">
+          <img src="voice actor/voice actor3.png" alt="Recording">
+          <img src="voice actor/voice actor 4.png" alt="Review & Report">
+          <div class="carousel-nav">
+            <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <span class="carousel-indicator">1 / 4</span>
+            <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="edu-bar edu-rose mt-3">
+        <div class="edu-label"><i class="fas fa-graduation-cap mr-1"></i>Educational Value</div>
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#be123c;"><i class="fas fa-comments mr-1"></i>Fluency</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#be123c;"><i class="fas fa-volume-up mr-1"></i>Speaking</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#be123c;"><i class="fas fa-chart-bar mr-1"></i>AI Feedback</span>
+          </div>
+          <div class="text-slate-500 text-xs flex items-center gap-1 flex-shrink-0"><i class="fas fa-microchip"></i> STT &middot; TTS &middot; LLM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 6: Magic Fortune English ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #faf5ff)">
+    <div class="slide-page-num">6 / 10</div>
+    <div class="w-full max-w-5xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="slide-icon icon-purple">
+          <i class="fas fa-hat-wizard"></i>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-slate-800">Magic Fortune English</h2>
+          <p class="text-purple-600 text-sm">포춘쿠키 & 타로카드 영어 운세 + 문법 학습</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Activity Flow</h3>
+          <div class="flow-step"><div class="flow-num num-purple">1</div><div class="text-slate-700 text-sm"><strong class="text-purple-700">Main Menu</strong> &mdash; 포춘쿠키 / 타로카드 / 캐릭터 소개 선택</div></div>
+          <div class="flow-step"><div class="flow-num num-purple">2</div><div class="text-slate-700 text-sm"><strong class="text-purple-700">Fortune Cookie</strong> &mdash; 5개 쿠키 중 선택, Luna 캐릭터 음성 안내</div></div>
+          <div class="flow-step"><div class="flow-num num-purple">3</div><div class="text-slate-700 text-sm"><strong class="text-purple-700">Tarot Card</strong> &mdash; 과거/현재/미래 카드 3장 선택 + 운세 메시지</div></div>
+          <div class="flow-step"><div class="flow-num num-purple">4</div><div class="text-slate-700 text-sm"><strong class="text-purple-700">Character Info</strong> &mdash; 마법사 Luna & 고양이 Noir 캐릭터 탐색</div></div>
+        </div>
+        <div class="img-carousel" data-color="purple">
+          <img src="magic fortune english/image/magic fortune1.png" alt="Main Menu" class="active">
+          <img src="magic fortune english/image/magic fortune4.png" alt="Fortune Cookie">
+          <img src="magic fortune english/image/magic fortune2.png" alt="Tarot Card">
+          <img src="magic fortune english/image/magic fortue3.png" alt="Tarot Reading Result">
+          <div class="carousel-nav">
+            <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <span class="carousel-indicator">1 / 4</span>
+            <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="edu-bar edu-purple mt-3">
+        <div class="edu-label"><i class="fas fa-graduation-cap mr-1"></i>Educational Value</div>
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#7e22ce;"><i class="fas fa-language mr-1"></i>Grammar</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#7e22ce;"><i class="fas fa-clock mr-1"></i>Tenses</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#7e22ce;"><i class="fas fa-headphones mr-1"></i>Listening</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#7e22ce;"><i class="fas fa-heart mr-1"></i>Motivation</span>
+          </div>
+          <div class="text-slate-500 text-xs flex items-center gap-1 flex-shrink-0"><i class="fas fa-microchip"></i> LLM &middot; TTS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 7: 캐릭터 작업 ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #fef3f2)">
+    <div class="slide-page-num">7 / 10</div>
+    <div class="w-full max-w-5xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="slide-icon" style="background:linear-gradient(135deg,#e11d48,#9333ea);">
+          <i class="fas fa-palette"></i>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-slate-800">캐릭터 <span class="gradient-text">작업</span></h2>
+          <p class="text-slate-500 text-sm">콘텐츠 몰입도를 높이는 캐릭터 디자인 &amp; 설정</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <!-- Left: Tab Cards -->
+        <div class="flex flex-col gap-3" id="charTabs">
+          <div class="char-tab active glass p-4 cursor-pointer" data-tab="hero" style="--tab-color:#d97706;--tab-bg:#fffbeb;">
+            <div class="flex items-center gap-3 mb-2">
+              <div style="width:36px;height:36px;border-radius:10px;background:#d97706;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;"><i class="fas fa-mask"></i></div>
+              <h3 class="text-slate-800 font-bold text-sm">Find Your Hero</h3>
+            </div>
+            <p class="text-slate-500 text-xs leading-relaxed">마블 히어로를 초등 3~4학년 타겟에 맞춰 <strong class="text-slate-600">Chibi 스타일</strong>로 변형. 코믹북 컨셉의 공통 디자인을 16명에게 일관 적용</p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">Chibi 스타일</span>
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">코믹북 컨셉</span>
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">16명 공통 적용</span>
+            </div>
+          </div>
+          <div class="char-tab glass p-4 cursor-pointer" data-tab="magic" style="--tab-color:#9333ea;--tab-bg:#faf5ff;">
+            <div class="flex items-center gap-3 mb-2">
+              <div style="width:36px;height:36px;border-radius:10px;background:#9333ea;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;"><i class="fas fa-hat-wizard"></i></div>
+              <h3 class="text-slate-800 font-bold text-sm">Magic Fortune English</h3>
+            </div>
+            <p class="text-slate-500 text-xs leading-relaxed">Luna &middot; Noir에 <strong class="text-slate-600">이름 &middot; 성격 부여</strong>, 소개 Orbs 구성, 탭 인터랙션, 아이템 일관성, <strong class="text-slate-600">음성 설정</strong></p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">캐릭터 정체성</span>
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">인터랙션</span>
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">음성 설정</span>
+            </div>
+            <div class="mt-2">
+              <button class="sim-btn w-full justify-center" style="background:#faf5ff;color:#9333ea;border-color:#9333ea;" onclick="event.stopPropagation();window.open('https://www.openai.fm/','_blank')" onmouseenter="this.style.background='#9333ea';this.style.color='white';this.style.borderStyle='solid'" onmouseleave="this.style.background='#faf5ff';this.style.color='#9333ea';this.style.borderStyle='dashed'">
+                <i class="fas fa-volume-high"></i> OpenAI.fm 음성 체험
+              </button>
+            </div>
+          </div>
+          <div class="char-tab glass p-4 cursor-pointer" data-tab="voice" style="--tab-color:#e11d48;--tab-bg:#fff1f2;">
+            <div class="flex items-center gap-3 mb-2">
+              <div style="width:36px;height:36px;border-radius:10px;background:#e11d48;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;"><i class="fas fa-microphone-lines"></i></div>
+              <h3 class="text-slate-800 font-bold text-sm">Voice Actor</h3>
+            </div>
+            <p class="text-slate-500 text-xs leading-relaxed">동물 캐릭터 <strong class="text-slate-600">털 &middot; 표정 &middot; 피부 디테일</strong> 극대화. AI(Firefly) 목소리톤 사전 제작, 매력적 비주얼로 <strong class="text-slate-600">학습 동기 강화</strong></p>
+            <div class="mt-2 flex flex-wrap gap-1">
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fff1f2;color:#e11d48;">디테일 극대화</span>
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fff1f2;color:#e11d48;">AI 음성</span>
+              <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fff1f2;color:#e11d48;">학습 동기</span>
+            </div>
+          </div>
+        </div>
+        <!-- Right: Carousel -->
+        <div id="charCarousel">
+          <!-- Find Your Hero carousel -->
+          <div class="char-panel active" data-panel="hero">
+            <div class="img-carousel char-carousel" data-color="amber">
+              <img src="find your hero/image/iron-man.webp" alt="Iron Man" class="active">
+              <img src="find your hero/image/spider-man.webp" alt="Spider-Man">
+              <img src="find your hero/image/hulk.webp" alt="Hulk">
+              <img src="find your hero/image/groot.webp" alt="Groot">
+              <img src="find your hero/image/black-widow.webp" alt="Black Widow">
+              <video src="find your hero/video/iron-man.mp4" controls></video>
+              <video src="find your hero/video/spider-man.mp4" controls></video>
+              <div class="carousel-nav">
+                <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+                <span class="carousel-indicator">1 / 7</span>
+                <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <!-- Magic Fortune English carousel -->
+          <div class="char-panel" data-panel="magic">
+            <div class="img-carousel" data-color="purple">
+              <img src="magic fortune english/image/luna-background.png" alt="Luna" class="active">
+              <img src="magic fortune english/image/noir-background.png" alt="Noir">
+              <img src="magic fortune english/image/noir-idle.png" alt="Noir Idle">
+              <img src="magic fortune english/image/fortune-char-1.png" alt="Fortune Character 1">
+              <img src="magic fortune english/image/fortune-char-2.png" alt="Fortune Character 2">
+              <img src="magic fortune english/image/fortune-char-3.png" alt="Fortune Character 3">
+              <img src="magic fortune english/image/fortune-char-4.png" alt="Fortune Character 4">
+              <img src="magic fortune english/image/fortune-char-5.png" alt="Fortune Character 5">
+              <img src="magic fortune english/image/fortune-char-6.png" alt="Fortune Character 6">
+              <img src="magic fortune english/image/fortune-char-reveal.png" alt="Luna Reveal">
+              <img src="magic fortune english/image/tarot-char-1.png" alt="Tarot Character 1">
+              <img src="magic fortune english/image/tarot-char-2.png" alt="Tarot Character 2">
+              <img src="magic fortune english/image/tarot-char-3.png" alt="Tarot Character 3">
+              <div class="carousel-nav">
+                <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+                <span class="carousel-indicator">1 / 13</span>
+                <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <!-- Voice Actor carousel -->
+          <div class="char-panel" data-panel="voice">
+            <div class="img-carousel" data-color="rose">
+              <img src="voice actor/character1.png" alt="Character 1" class="active">
+              <img src="voice actor/character2.png" alt="Character 2">
+              <img src="voice actor/character3.png" alt="Character 3">
+              <img src="voice actor/character4.png" alt="Character 4">
+              <div class="carousel-nav">
+                <button class="carousel-btn carousel-prev"><i class="fas fa-chevron-left"></i></button>
+                <span class="carousel-indicator">1 / 4</span>
+                <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 8: 프로젝트 의의 ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #eef2ff)">
+    <div class="slide-page-num">8 / 10</div>
+    <div class="w-full max-w-4xl">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">프로젝트 <span class="gradient-text">핵심 의의</span></h2>
+        <p class="text-slate-500">AI Playground가 만들어가는 가치</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-5 items-stretch">
+        <!-- Card 1 -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-robot"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">AI 게이미피케이션</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">LLM, 이미지 생성, STT, TTS 등 최신 AI 기술을 교육용 게임에 자연스럽게 녹여낸 Vibe Coding 기반 개발</p>
+          <div class="mt-3 flex flex-wrap gap-1">
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">LLM</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">Image Gen</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">STT</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">TTS</span>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#d97706;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-users"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">User-Driven 개발</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">학생들의 아이디어를 실제 콘텐츠로 구현하는 사용자 참여형 개발 프로세스 (Find Your Hero가 대표 사례)</p>
+          <div class="mt-3 flex flex-wrap gap-1">
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">학생 아이디어 → 기획 → 개발 → 런칭</span>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#059669;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-arrows-rotate"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">1차 오픈 문제점 보완</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">
+            <strong class="text-slate-600">로딩 지연 해결</strong> &mdash; 애니메이션 동시 시작으로 체감 대기시간 단축, 캐릭터 로딩 화면 구현<br>
+            <strong class="text-slate-600">AI 비용 절감</strong> &mdash; 코드 및 프롬프트 최적화 설계
+          </p>
+          <div class="mt-3 flex flex-wrap gap-1">
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#ecfdf5;color:#059669;">로딩 최적화</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#ecfdf5;color:#059669;">비용 절감</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#ecfdf5;color:#059669;">UX 개선</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 9: 개발 프로세스 & 도구 ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #f0fdf4)">
+    <div class="slide-page-num">9 / 10</div>
+    <div class="w-full max-w-5xl">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-1">개발 프로세스 <span class="gradient-text">& 도구</span></h2>
+        <p class="text-slate-500 text-xs">AI 에이전트와 함께하는 차세대 개발 워크플로우</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5 items-stretch">
+        <!-- Card 1 -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-wand-magic-sparkles"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">Antigravity + Claude Code</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">Antigravity의 실시간 시각 프리뷰와 Claude Code의 에이전트 자율 실행을 결합한 Vibe Coding 환경으로 빠른 프로토타이핑 실현</p>
+          <div class="mt-3 flex flex-wrap gap-1">
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">실시간 프리뷰</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#6366f1;">에이전트 자율 실행</span>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#d97706;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-file-code"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">Skill.md 표준화</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">공통 기술 패턴(JWT 인증, API 호출 등)을 Skill 파일로 문서화하여 에이전트가 일관된 코드를 생성하도록 작업 방식 표준화</p>
+          <div class="mt-3 flex flex-wrap gap-1">
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">Single Source of Truth</span>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">재사용 패턴</span>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#9333ea;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-user-astronaut"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">T-Shaped 1인 풀스택</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">기획 &middot; 디자인 &middot; 개발을 AI 도구와 함께 1인이 수행. 커뮤니케이션 비용 제로, 의사결정 속도 극대화</p>
+          <div class="mt-3 flex flex-wrap gap-1">
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">기획→디자인→개발</span>
+          </div>
+        </div>
+        <!-- Card 4: Multi-Agent -->
+        <div class="glass p-5 hover-card flex flex-col">
+          <div class="flex items-center gap-3 mb-3">
+            <div style="width:44px;height:44px;border-radius:12px;background:#059669;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;flex-shrink:0;"><i class="fas fa-sitemap"></i></div>
+            <h3 class="text-slate-800 font-bold text-base">Multi-Agent 오케스트레이션</h3>
+          </div>
+          <p class="text-slate-500 text-sm leading-relaxed flex-1">기획/개발/디자인 에이전트가 오케스트레이터 아래 협업. 각 에이전트가 전문 영역을 자율 처리하고 결과를 통합</p>
+          <div class="mt-3">
+            <button class="sim-btn w-full justify-center" onclick="openSimModal()">
+              <i class="fas fa-play"></i> 시뮬레이션 시작
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 10: 향후 계획 & 마무리 ========== -->
+  <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #eef2ff, #e0e7ff)">
+    <div class="slide-page-num">10 / 10</div>
+    <div class="w-full max-w-4xl text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-8">
+        <i class="fas fa-road"></i> Roadmap
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-10">향후 계획</h2>
+
+      <div class="flex items-center justify-center gap-4 md:gap-8 mb-12">
+        <div class="glass p-5 rounded-2xl text-center hover-card" style="min-width:160px">
+          <div class="text-indigo-600 text-xs font-bold mb-2">CURRENT</div>
+          <div class="text-slate-800 font-bold text-lg mb-1">3월 런칭</div>
+          <div class="text-slate-400 text-xs">신규 게임 4종<br>정식 오픈</div>
+          <div class="w-3 h-3 rounded-full bg-indigo-500 mx-auto mt-3"></div>
+        </div>
+        <div class="text-slate-300 text-2xl"><i class="fas fa-arrow-right"></i></div>
+        <div class="glass p-5 rounded-2xl text-center hover-card border border-indigo-200" style="min-width:160px">
+          <div class="text-amber-600 text-xs font-bold mb-2">NEXT</div>
+          <div class="text-slate-800 font-bold text-lg mb-1">4/27 3차 오픈</div>
+          <div class="text-slate-400 text-xs">신규 엔진 &middot;<br>미공개 모델 적용</div>
+          <div class="w-3 h-3 rounded-full bg-amber-500 mx-auto mt-3 animate-pulse"></div>
+        </div>
+        <div class="text-slate-300 text-2xl"><i class="fas fa-arrow-right"></i></div>
+        <div class="glass p-5 rounded-2xl text-center hover-card" style="min-width:160px">
+          <div class="text-emerald-600 text-xs font-bold mb-2">FUTURE</div>
+          <div class="text-slate-800 font-bold text-lg mb-1">지속 확장</div>
+          <div class="text-slate-400 text-xs">콘텐츠 고도화 &middot;<br>사용자 피드백 반영</div>
+          <div class="w-3 h-3 rounded-full bg-emerald-500 mx-auto mt-3"></div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <h3 class="text-5xl font-black gradient-text mb-4">Thank You</h3>
+        <p class="text-slate-400 text-lg">Q&A</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Simulation modal -->
+<div class="sim-modal" id="simModal" onclick="if(event.target===this)closeSimModal()">
+  <div class="sim-modal-content">
+    <button class="sim-modal-close" onclick="closeSimModal()"><i class="fas fa-times"></i></button>
+    <iframe id="simIframe" style="width:100%;height:100%;border:none;" title="Multi-Agent Simulation"></iframe>
+  </div>
+</div>
+
+<!-- PDF save button -->
+<button class="pdf-btn" onclick="window.print()" title="PDF로 저장">
+  <i class="fas fa-file-pdf"></i> PDF 저장
+</button>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Page indicator dots -->
+<div class="page-indicator" id="pageDots"></div>
+
+<!-- Nav hint -->
+<div class="nav-hint">
+  <i class="fas fa-keyboard mr-1"></i> <span class="hidden md:inline">Arrow Keys</span> / Click
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+
+// Create page dots
+const dotsContainer = document.getElementById('pageDots');
+slides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'page-dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsContainer.appendChild(dot);
+});
+
+function updateProgress() {
+  const pct = ((currentSlide + 1) / totalSlides) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function updateDots() {
+  document.querySelectorAll('.page-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentSlide);
+  });
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides || n === currentSlide) return;
+  const prev = currentSlide;
+  currentSlide = n;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i === currentSlide) s.classList.add('active');
+    else if (i === prev) s.classList.add('prev');
+  });
+  const bg = slides[currentSlide].dataset.bg;
+  if (bg) document.body.style.background = bg;
+  updateProgress();
+  updateDots();
+}
+
+function nextSlide() { goToSlide(currentSlide + 1); }
+function prevSlide() { goToSlide(currentSlide - 1); }
+
+// Simulation modal
+let simModalOpen = false;
+function openSimModal() {
+  const modal = document.getElementById('simModal');
+  const iframe = document.getElementById('simIframe');
+  iframe.src = 'multi_agent_office_sim.html';
+  modal.classList.add('open');
+  simModalOpen = true;
+}
+function closeSimModal() {
+  const modal = document.getElementById('simModal');
+  const iframe = document.getElementById('simIframe');
+  modal.classList.remove('open');
+  iframe.src = '';
+  simModalOpen = false;
+}
+
+// Keyboard nav
+document.addEventListener('keydown', (e) => {
+  if (simModalOpen) { if (e.key === 'Escape') closeSimModal(); return; }
+
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+});
+
+// Click nav
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.page-dot, a, button, .thumb-card, .img-carousel')) return;
+  if (e.clientX > window.innerWidth / 2) nextSlide();
+  else prevSlide();
+});
+
+// Touch swipe
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+});
+
+// Init
+updateProgress();
+const initBg = slides[0].dataset.bg;
+if (initBg) document.body.style.background = initBg;
+
+// Apply backgrounds directly to slides for print
+slides.forEach(s => { if (s.dataset.bg) s.style.background = s.dataset.bg; });
+
+// Character tab switching
+document.querySelectorAll('.char-tab').forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const tabId = tab.dataset.tab;
+    document.querySelectorAll('.char-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.char-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.querySelector(`.char-panel[data-panel="${tabId}"]`);
+    if (panel) panel.classList.add('active');
+    // Pause all videos when switching tabs
+    document.querySelectorAll('.char-panel video').forEach(v => v.pause());
+  });
+});
+
+// Image carousels
+document.querySelectorAll('.img-carousel').forEach(carousel => {
+  const isCharCarousel = carousel.classList.contains('char-carousel');
+  const items = isCharCarousel
+    ? carousel.querySelectorAll('img, video')
+    : carousel.querySelectorAll('img');
+  const label = carousel.querySelector('.carousel-label');
+  const indicator = carousel.querySelector('.carousel-indicator');
+  const total = items.length;
+  let idx = 0;
+
+  function showItem(n) {
+    idx = (n + total) % total;
+    items.forEach(item => {
+      item.classList.remove('active');
+      if (item.tagName === 'VIDEO') item.pause();
+    });
+    items[idx].classList.add('active');
+    const stepLabel = (idx + 1);
+    const stepIndicator = (idx + 1) + ' / ' + total;
+    if (label) label.textContent = stepLabel;
+    if (indicator) indicator.textContent = stepIndicator;
+  }
+
+  carousel.querySelector('.carousel-prev')?.addEventListener('click', (e) => { e.stopPropagation(); showItem(idx - 1); });
+  carousel.querySelector('.carousel-next')?.addEventListener('click', (e) => { e.stopPropagation(); showItem(idx + 1); });
+});
+
+// Print: scale-down safety net
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('.slide').forEach(slide => {
+    const inner = slide.querySelector(':scope > div:not(.slide-page-num)');
+    if (!inner) return;
+    inner.style.transform = '';
+    inner.style.transformOrigin = 'top center';
+    const usableH = slide.clientHeight - 48; // subtract padding
+    const contentH = inner.scrollHeight;
+    if (contentH > usableH) {
+      const scale = Math.max(usableH / contentH, 0.72);
+      inner.style.transform = 'scale(' + scale + ')';
+      inner.style.width = (100 / scale) + '%';
+    }
+  });
+});
+window.addEventListener('afterprint', () => {
+  document.querySelectorAll('.slide > div:not(.slide-page-num)').forEach(inner => {
+    inner.style.transform = '';
+    inner.style.width = '';
+  });
+});
+</script>
+</body>
+</html>

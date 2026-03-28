@@ -1,0 +1,406 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Pretendard', sans-serif; }
+
+#sim { width: 100%; background: #f8fafc; border-radius: 12px; overflow: hidden; position: relative; user-select: none; }
+
+#office { position: relative; width: 100%; height: 300px; background: #f0ede8; border-bottom: 2px solid #e2e8f0; overflow: hidden; }
+
+.desk { position: absolute; border-radius: 6px; }
+.desk-planner { left: 15px; top: 75px; width: 80px; height: 50px; background: #d4c5a9; border: 1.5px solid #b8a88a; }
+.desk-rnd { left: 130px; top: 75px; width: 80px; height: 50px; background: #c4d4d4; border: 1.5px solid #a0c0c8; }
+.desk-designer { left: 245px; top: 75px; width: 80px; height: 50px; background: #c9c4d4; border: 1.5px solid #a8a0c8; }
+.desk-dev { left: 360px; top: 75px; width: 80px; height: 50px; background: #c9d4b8; border: 1.5px solid #a8b88a; }
+.desk-qa { left: 475px; top: 75px; width: 80px; height: 50px; background: #d4c4c4; border: 1.5px solid #c8a0a0; }
+.desk-label { position: absolute; font-size: 8px; color: #64748b; text-align: center; width: 80px; top: -14px; left: 0; font-weight: 500; }
+
+.monitor { position: absolute; width: 30px; height: 22px; background: #2c2c2a; border-radius: 3px; top: 8px; left: 25px; border: 2px solid #444; }
+.monitor::after { content: ''; position: absolute; width: 10px; height: 3px; background: #2c2c2a; bottom: -5px; left: 10px; }
+.screen { position: absolute; inset: 2px; border-radius: 1px; overflow: hidden; }
+.screen-lines { display: flex; flex-direction: column; gap: 2px; padding: 2px; }
+.sl { height: 2px; border-radius: 1px; opacity: 0.7; }
+
+.agent { position: absolute; width: 36px; height: 48px; cursor: pointer; transition: filter 0.2s; z-index: 10; }
+.agent:hover { filter: brightness(1.1); }
+.agent-body { position: relative; }
+.head { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto; position: relative; border: 2px solid rgba(0,0,0,0.15); }
+.torso { width: 28px; height: 20px; border-radius: 6px 6px 2px 2px; margin: 1px auto 0; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
+.icon { font-size: 9px; }
+.name-tag { font-size: 7px; color: #64748b; text-align: center; margin-top: 2px; font-weight: 500; white-space: nowrap; }
+
+#orchestrator .head { background: #E8593C; width: 28px; height: 28px; }
+#orchestrator .torso { width: 32px; height: 20px; background: #c94520; }
+#planner .head { background: #3B8BD4; }
+#planner .torso { background: #185FA5; }
+#designer .head { background: #7F77DD; }
+#designer .torso { background: #534AB7; }
+#developer .head { background: #639922; }
+#developer .torso { background: #3B6D11; }
+#qa .head { background: #e11d48; }
+#qa .torso { background: #be123c; }
+#rnd .head { background: #0891b2; }
+#rnd .torso { background: #0e7490; }
+
+.speech-bubble { position: absolute; background: white; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 5px 8px; font-size: 9px; color: #334155; white-space: normal; pointer-events: none; z-index: 20; box-shadow: 0 2px 6px rgba(0,0,0,0.08); opacity: 0; transition: opacity 0.3s; max-width: 140px; line-height: 1.4; }
+.speech-bubble.visible { opacity: 1; }
+.speech-bubble::after { content: ''; position: absolute; bottom: -7px; left: 14px; border: 6px solid transparent; border-top-color: white; border-bottom: none; }
+.speech-bubble::before { content: ''; position: absolute; bottom: -9px; left: 13px; border: 7px solid transparent; border-top-color: #e2e8f0; border-bottom: none; }
+
+.task-packet { position: absolute; width: 26px; height: 18px; border-radius: 4px; z-index: 15; pointer-events: none; display: flex; align-items: center; justify-content: center; font-size: 8px; transition: none; }
+
+.floor-line { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(0,0,0,0.1); }
+.wall { position: absolute; top: 0; left: 0; right: 0; height: 12px; background: #e8e4de; border-bottom: 1.5px solid rgba(0,0,0,0.08); }
+.window { position: absolute; top: 16px; width: 50px; height: 40px; background: #d4e8f4; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 3px; }
+.window::after { content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: rgba(0,0,0,0.1); }
+.window::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(0,0,0,0.1); }
+
+.plant { position: absolute; bottom: 0; }
+.pot { width: 14px; height: 10px; background: #c87444; border-radius: 2px 2px 4px 4px; margin: 0 auto; }
+.leaves { display: flex; gap: 2px; justify-content: center; }
+.leaf { width: 8px; height: 12px; background: #639922; border-radius: 50% 50% 0 50%; }
+.leaf:nth-child(2) { border-radius: 50% 50% 50% 0; margin-top: 3px; }
+
+#log-panel { padding: 10px 14px; max-height: 160px; overflow-y: auto; }
+#log-panel h3 { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+.log-entry { font-size: 11px; padding: 3px 0; border-bottom: 0.5px solid #f1f5f9; color: #334155; line-height: 1.5; }
+.log-entry:last-child { border-bottom: none; }
+.log-agent { font-weight: 600; margin-right: 4px; }
+.la-orc { color: #E8593C; }
+.la-pla { color: #3B8BD4; }
+.la-des { color: #7F77DD; }
+.la-dev { color: #639922; }
+.la-qa { color: #e11d48; }
+.log-time { color: #94a3b8; font-size: 9px; margin-right: 5px; }
+
+#controls { padding: 8px 14px; display: flex; align-items: center; gap: 10px; border-top: 0.5px solid #e2e8f0; }
+#start-btn { padding: 5px 12px; font-size: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; color: #334155; transition: background 0.15s; font-family: inherit; }
+#start-btn:hover { background: #f8fafc; }
+#status-text { font-size: 11px; color: #64748b; flex: 1; }
+#step-indicator { font-size: 10px; color: #94a3b8; }
+</style>
+
+<div id="sim">
+  <div id="office">
+    <div class="wall"></div>
+    <div class="window" style="left:100px"></div>
+    <div class="window" style="left:270px"></div>
+    <div class="window" style="left:440px"></div>
+
+    <div class="desk desk-planner"><span class="desk-label">기획</span><div class="monitor"><div class="screen" style="background:#1a2a3a"><div class="screen-lines"><div class="sl" style="width:70%;background:#4a9"></div><div class="sl" style="width:50%;background:#4a9"></div></div></div></div></div>
+    <div class="desk desk-rnd"><span class="desk-label">R&D</span><div class="monitor"><div class="screen" style="background:#1a2a2a"><div class="screen-lines"><div class="sl" style="width:65%;background:#5bb"></div><div class="sl" style="width:80%;background:#5bb"></div></div></div></div></div>
+    <div class="desk desk-designer"><span class="desk-label">디자인</span><div class="monitor"><div class="screen" style="background:#1a1a2e"><div class="screen-lines"><div class="sl" style="width:80%;background:#77d"></div><div class="sl" style="width:60%;background:#aaf"></div></div></div></div></div>
+    <div class="desk desk-dev"><span class="desk-label">개발</span><div class="monitor"><div class="screen" style="background:#1a3a2a"><div class="screen-lines"><div class="sl" style="width:60%;background:#5a9"></div><div class="sl" style="width:90%;background:#5a9"></div></div></div></div></div>
+    <div class="desk desk-qa"><span class="desk-label">QA</span><div class="monitor"><div class="screen" style="background:#2a1a1a"><div class="screen-lines"><div class="sl" style="width:75%;background:#d77"></div><div class="sl" style="width:55%;background:#d77"></div></div></div></div></div>
+
+    <div class="plant" style="right:15px"><div class="leaves"><div class="leaf"></div><div class="leaf"></div></div><div class="pot"></div></div>
+    <div class="plant" style="left:15px"><div class="leaves"><div class="leaf"></div><div class="leaf"></div></div><div class="pot"></div></div>
+
+    <!-- Orchestrator -->
+    <div class="agent" id="orchestrator" style="left:250px;top:185px">
+      <div class="agent-body">
+        <div class="head" style="border: 2px solid rgba(0,0,0,0.2);">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg>
+        </div>
+        <div class="torso"><span class="icon">🎯</span></div>
+      </div>
+      <div class="name-tag">오케스트레이터</div>
+    </div>
+
+    <!-- Planner -->
+    <div class="agent" id="planner" style="left:37px;top:140px">
+      <div class="agent-body">
+        <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
+        <div class="torso"><span class="icon">📋</span></div>
+      </div>
+      <div class="name-tag">기획자</div>
+    </div>
+
+    <!-- Designer -->
+    <div class="agent" id="designer" style="left:267px;top:140px">
+      <div class="agent-body">
+        <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
+        <div class="torso"><span class="icon">🎨</span></div>
+      </div>
+      <div class="name-tag">디자이너</div>
+    </div>
+
+    <!-- Developer -->
+    <div class="agent" id="developer" style="left:382px;top:140px">
+      <div class="agent-body">
+        <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
+        <div class="torso"><span class="icon">💻</span></div>
+      </div>
+      <div class="name-tag">개발자</div>
+    </div>
+
+    <!-- QA -->
+    <div class="agent" id="qa" style="left:497px;top:140px">
+      <div class="agent-body">
+        <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
+        <div class="torso"><span class="icon">🔍</span></div>
+      </div>
+      <div class="name-tag">QA</div>
+    </div>
+
+    <!-- R&D -->
+    <div class="agent" id="rnd" style="left:152px;top:140px">
+      <div class="agent-body">
+        <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
+        <div class="torso"><span class="icon">📚</span></div>
+      </div>
+      <div class="name-tag">R&D</div>
+    </div>
+
+    <!-- Speech bubbles -->
+    <div class="speech-bubble" id="bubble-orc" style="left:210px;top:150px"></div>
+    <div class="speech-bubble" id="bubble-pla" style="left:5px;top:95px"></div>
+    <div class="speech-bubble" id="bubble-rnd" style="left:120px;top:95px"></div>
+    <div class="speech-bubble" id="bubble-des" style="left:235px;top:95px"></div>
+    <div class="speech-bubble" id="bubble-dev" style="left:350px;top:95px"></div>
+    <div class="speech-bubble" id="bubble-qa" style="left:460px;top:95px"></div>
+
+    <div class="floor-line"></div>
+  </div>
+
+  <div id="log-panel">
+    <h3>에이전트 로그</h3>
+    <div id="log-entries"></div>
+  </div>
+
+  <div id="controls">
+    <button id="start-btn" onclick="startSim()">▶ 시뮬레이션 시작</button>
+    <span id="status-text">버튼을 눌러 멀티에이전트 오케스트레이션을 시작하세요</span>
+    <span id="step-indicator"></span>
+  </div>
+</div>
+
+<script>
+const office = document.getElementById('office');
+let running = false, stepIdx = 0;
+
+const agents = {
+  orc: document.getElementById('orchestrator'),
+  pla: document.getElementById('planner'),
+  des: document.getElementById('designer'),
+  dev: document.getElementById('developer'),
+  qa: document.getElementById('qa'),
+  rnd: document.getElementById('rnd')
+};
+
+const bubbles = {
+  orc: document.getElementById('bubble-orc'),
+  pla: document.getElementById('bubble-pla'),
+  des: document.getElementById('bubble-des'),
+  dev: document.getElementById('bubble-dev'),
+  qa: document.getElementById('bubble-qa'),
+  rnd: document.getElementById('bubble-rnd')
+};
+
+function getCenter(el) {
+  const r = el.getBoundingClientRect();
+  const or = office.getBoundingClientRect();
+  return { x: r.left - or.left + r.width/2, y: r.top - or.top + r.height/2 };
+}
+
+function showBubble(who, text, duration=2000) {
+  const b = bubbles[who];
+  b.textContent = text;
+  b.classList.add('visible');
+  return new Promise(res => setTimeout(() => { b.classList.remove('visible'); res(); }, duration));
+}
+
+function moveAgent(el, tx, ty, duration=700) {
+  return new Promise(res => {
+    const start = { x: parseInt(el.style.left), y: parseInt(el.style.top) };
+    const startTime = performance.now();
+    function anim(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      el.style.left = (start.x + (tx - start.x) * ease) + 'px';
+      el.style.top  = (start.y + (ty - start.y) * ease) + 'px';
+      if (t < 1) requestAnimationFrame(anim); else res();
+    }
+    requestAnimationFrame(anim);
+  });
+}
+
+function sendPacket(fromEl, toEl, emoji, color='#faeeda', borderColor='#FAC775') {
+  return new Promise(res => {
+    const from = getCenter(fromEl);
+    const to   = getCenter(toEl);
+    const pkt  = document.createElement('div');
+    pkt.className = 'task-packet';
+    pkt.style.background = color;
+    pkt.style.borderColor = borderColor;
+    pkt.style.border = '1.5px solid ' + borderColor;
+    pkt.textContent = emoji;
+    pkt.style.left  = (from.x - 13) + 'px';
+    pkt.style.top   = (from.y - 9) + 'px';
+    office.appendChild(pkt);
+    const startTime = performance.now();
+    const dur = 700;
+    function anim(now) {
+      const t = Math.min((now - startTime)/dur, 1);
+      const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      pkt.style.left = (from.x - 13 + (to.x - from.x) * ease) + 'px';
+      pkt.style.top  = (from.y - 9 + (to.y - from.y) * ease - Math.sin(t*Math.PI)*25) + 'px';
+      if (t < 1) requestAnimationFrame(anim); else { pkt.remove(); res(); }
+    }
+    requestAnimationFrame(anim);
+  });
+}
+
+function addLog(who, color, name, text) {
+  const now = new Date();
+  const t = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');
+  const el = document.createElement('div');
+  el.className = 'log-entry';
+  el.innerHTML = `<span class="log-time">${t}</span><span class="log-agent" style="color:${color}">[${name}]</span>${text}`;
+  const lp = document.getElementById('log-entries');
+  lp.appendChild(el);
+  lp.scrollTop = lp.scrollHeight;
+}
+
+function shake(el) {
+  let x = 0;
+  const orig = parseInt(el.style.left);
+  const anim = () => {
+    x++;
+    el.style.left = (orig + Math.sin(x*1.2)*4) + 'px';
+    if (x < 10) requestAnimationFrame(anim); else el.style.left = orig+'px';
+  };
+  requestAnimationFrame(anim);
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+const steps = [
+  async () => {
+    document.getElementById('status-text').textContent = '1/10 — 오케스트레이터가 작업 분석 중...';
+    shake(agents.orc);
+    await showBubble('orc', '📊 새 게임 콘텐츠 개발 시작! 작업을 분배할게요.', 2000);
+    addLog('orc','#E8593C','오케스트레이터','새 게임 콘텐츠 개발 수신. 에이전트 팀에 작업 분배 시작');
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '2/10 — 기획자에게 PRD 작성 위임...';
+    await moveAgent(agents.orc, 150, 190);
+    await sendPacket(agents.orc, agents.pla, '📋', '#dbeafe','#3B8BD4');
+    await showBubble('orc', '기획자님, PRD 작성 부탁드려요!', 1500);
+    addLog('orc','#E8593C','오케스트레이터','→ 기획자에게 "PRD 작성 및 요구사항 정리" 위임');
+    await wait(200);
+    shake(agents.pla);
+    await showBubble('pla','PRD 작성 및 업그레이드 시작합니다!', 1500);
+    addLog('pla','#3B8BD4','기획자','PRD 작성 작업 수신. 작업 시작');
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '3/10 — 기획자 ↔ R&D 협업 중...';
+    await sendPacket(agents.pla, agents.rnd, '📄', '#cffafe','#0891b2');
+    await showBubble('pla', 'R&D님, PRD 교육 효과 검증 부탁드려요!', 1500);
+    addLog('pla','#3B8BD4','기획자','→ R&D에게 PRD 교육적 효과 검증 요청');
+    await wait(300);
+    shake(agents.rnd);
+    await showBubble('rnd', 'CEFR 기준 확인 후 피드백 드릴게요!', 1500);
+    addLog('rnd','#0891b2','R&D','PRD 검토 시작. CEFR 난이도 기준 적용');
+    await wait(300);
+    await sendPacket(agents.rnd, agents.pla, '✏️', '#dbeafe','#3B8BD4');
+    await showBubble('rnd', '난이도 조정 피드백 완료!', 1200);
+    addLog('rnd','#0891b2','R&D','→ 기획자에게 난이도 조정 피드백 전달');
+    await showBubble('pla', '피드백 반영! PRD 업데이트합니다.', 1200);
+    addLog('pla','#3B8BD4','기획자','R&D 피드백 반영하여 PRD 업데이트');
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '4/10 — 디자이너에게 화면 설계 위임...';
+    await moveAgent(agents.orc, 250, 185);
+    await sendPacket(agents.orc, agents.des, '🎨', '#ede9fe','#7F77DD');
+    await showBubble('orc', '디자이너님, 화면 스케일 적용해 주세요!', 1500);
+    addLog('orc','#E8593C','오케스트레이터','→ 디자이너에게 "화면 스케일 및 디자인 규정" 위임');
+    await wait(200);
+    shake(agents.des);
+    await showBubble('des', '공통 디자인 규정 적용 시작! 🎨', 1500);
+    addLog('des','#7F77DD','디자이너','화면 스케일 및 디자인 규정 작업 시작');
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '5/10 — 개발자에게 엔진 연동 위임...';
+    await moveAgent(agents.orc, 320, 190);
+    await sendPacket(agents.orc, agents.dev, '💻', '#dcfce7','#639922');
+    await showBubble('orc', '개발자님, Whisper 연동과 JWT 작업 부탁해요!', 1800);
+    addLog('orc','#E8593C','오케스트레이터','→ 개발자에게 "Whisper 연동, 리뷰 팝업, JWT" 위임');
+    await wait(200);
+    shake(agents.dev);
+    await showBubble('dev', 'Whisper 엔진 연동 시작합니다! 💻', 1500);
+    addLog('dev','#639922','개발자','Whisper 연동, 리뷰 팝업, JWT 작업 시작');
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '6/10 — QA에게 검수 위임...';
+    await moveAgent(agents.orc, 370, 185);
+    await sendPacket(agents.orc, agents.qa, '🔍', '#ffe4e6','#e11d48');
+    await showBubble('orc', 'QA님, 개발 검수와 디바이스 테스트 준비해 주세요!', 1800);
+    addLog('orc','#E8593C','오케스트레이터','→ QA에게 "개발 검수 및 디바이스별 테스트" 위임');
+    await wait(200);
+    shake(agents.qa);
+    await showBubble('qa', '체크리스트 작성하고 검수 준비 중! 🔍', 1500);
+    addLog('qa','#e11d48','QA','개발 검수 및 디바이스별 테스트 준비 시작');
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '7/10 — R&D에게 교육 검증 위임...';
+    await moveAgent(agents.orc, 450, 185);
+    await sendPacket(agents.orc, agents.rnd, '📚', '#cffafe','#0891b2');
+    await showBubble('orc', 'R&D님, 교육 효과 검증과 영문 검수 부탁드려요!', 1800);
+    addLog('orc','#E8593C','오케스트레이터','→ R&D에게 "교육 효과·CEFR 난이도·영문 검수" 위임');
+    await wait(200);
+    shake(agents.rnd);
+    await showBubble('rnd', 'CEFR 기준 난이도 검증 시작합니다! 📚', 1500);
+    addLog('rnd','#0891b2','R&D','교육적 효과 검증, CEFR 난이도 검증, 영문 검수 시작');
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '8/10 — 기획·디자인·개발 결과 보고...';
+    await moveAgent(agents.orc, 250, 185);
+    await Promise.all([
+      sendPacket(agents.pla, agents.orc, '✅', '#dbeafe','#3B8BD4'),
+      wait(200).then(() => sendPacket(agents.des, agents.orc, '✅', '#ede9fe','#7F77DD')),
+      wait(400).then(() => sendPacket(agents.dev, agents.orc, '✅', '#dcfce7','#639922')),
+    ]);
+    addLog('pla','#3B8BD4','기획자','PRD 작성 완료 → 보고');
+    addLog('des','#7F77DD','디자이너','디자인 규정 적용 완료 → 보고');
+    addLog('dev','#639922','개발자','Whisper 연동·JWT·리뷰 팝업 완료 → 보고');
+    await showBubble('orc', '기획·디자인·개발 완료! QA·R&D 대기...', 1500);
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '9/10 — QA·R&D 결과 보고...';
+    await Promise.all([
+      sendPacket(agents.qa, agents.orc, '✅', '#ffe4e6','#e11d48'),
+      wait(300).then(() => sendPacket(agents.rnd, agents.orc, '✅', '#cffafe','#0891b2')),
+    ]);
+    addLog('qa','#e11d48','QA','디바이스별 검수 완료, 체크리스트 제출 → 보고');
+    addLog('rnd','#0891b2','R&D','CEFR 검증 완료, 영문 최종 검수 완료 → 보고');
+    await showBubble('orc', '모든 에이전트 완료! 결과 취합 중...', 1500);
+  },
+  async () => {
+    document.getElementById('status-text').textContent = '10/10 — 오케스트레이터 통합 완료!';
+    shake(agents.orc);
+    addLog('orc','#E8593C','오케스트레이터','모든 에이전트 팀 결과 수신. 개발 통합 완료 ✅');
+    await showBubble('orc', '🎉 개발 완료! 모든 작업이 통합되었습니다', 2500);
+    document.getElementById('start-btn').textContent = '↺ 다시 시작';
+    document.getElementById('step-indicator').textContent = '';
+    running = false; stepIdx = 0;
+    agents.orc.style.left = '250px'; agents.orc.style.top = '185px';
+  }
+];
+
+async function startSim() {
+  if (running) return;
+  if (stepIdx === 0) {
+    document.getElementById('log-entries').innerHTML = '';
+    agents.orc.style.left = '250px'; agents.orc.style.top = '185px';
+  }
+  running = true;
+  document.getElementById('start-btn').textContent = '⏳ 진행 중...';
+  for (let i = 0; i < steps.length; i++) {
+    stepIdx = i;
+    document.getElementById('step-indicator').textContent = `(${i+1}/${steps.length})`;
+    await steps[i]();
+    await wait(350);
+  }
+}
+</script>
