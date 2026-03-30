@@ -28,7 +28,7 @@ tailwind.config = {
 
   /* Slide container */
   .slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
-  .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: translateX(60px); padding: 40px 48px; }
+  .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: translateX(60px); padding: 40px 32px; }
   .slide.active { opacity: 1; pointer-events: auto; transform: translateX(0); z-index: 10; }
   .slide.prev { opacity: 0; transform: translateX(-60px); }
 
@@ -86,7 +86,7 @@ tailwind.config = {
   .carousel-indicator { color: white; font-size: 14px; font-weight: 600; min-width: 80px; text-align: center; }
 
   /* Value badge */
-  .value-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; }
+  .value-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 15px; font-weight: 500; }
 
   /* Educational Value bar */
   .edu-bar { border-radius: 12px; padding: 10px 16px; border-left: 4px solid; }
@@ -124,7 +124,7 @@ tailwind.config = {
 
   /* Readability overrides */
   .slide .text-sm { font-size: 16px !important; }
-  .slide .text-xs { font-size: 14px !important; }
+  .slide .text-xs { font-size: 15px !important; }
   .slide p.text-sm { line-height: 1.6 !important; }
   .slide h3.text-xs { font-size: 13px !important; letter-spacing: 0.08em !important; }
 
@@ -212,7 +212,7 @@ tailwind.config = {
   <!-- ========== SLIDE 1: 표지 ========== -->
   <div class="slide active" data-bg="linear-gradient(135deg, #ffffff 0%, #eef2ff 50%, #e0e7ff 100%)">
     <div class="text-center max-w-3xl">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-8 fade-in-up">
+      <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-50 text-indigo-600 text-lg font-semibold mb-8 fade-in-up">
         <i class="fas fa-rocket"></i> 2026년 3월 2차 런칭
       </div>
       <h1 class="text-5xl md:text-7xl font-black mb-6 fade-in-up" style="animation-delay:0.1s">
@@ -222,7 +222,7 @@ tailwind.config = {
         신규 게임 4종 런칭 개발 보고서
       </h2>
       <div class="mb-12"></div>
-      <div class="flex items-center justify-center gap-6 text-slate-400 text-sm fade-in-up" style="animation-delay:0.4s">
+      <div class="flex items-center justify-center gap-6 text-slate-400 text-lg fade-in-up" style="animation-delay:0.4s">
         <span><i class="far fa-calendar-alt mr-2"></i>2026. 03. 30</span>
         <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
         <span><i class="far fa-user mr-2"></i>이경희</span>
@@ -236,7 +236,7 @@ tailwind.config = {
   <!-- ========== SLIDE 2: 목차 & 핵심 요약 ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #f8fafc)">
     <div class="slide-page-num">2 / 10</div>
-    <div class="w-full max-w-4xl">
+    <div class="w-full max-w-5xl">
       <div class="text-center mb-3">
         <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-1">신규 런칭 게임 <span class="gradient-text">4종</span> 한눈에 보기</h2>
         <p class="text-slate-500 text-xs">초등학생 대상 AI 기반 영어 학습 게임</p>
@@ -310,7 +310,7 @@ tailwind.config = {
   <!-- ========== SLIDE 3: Treasure Hunter ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #ecfdf5)">
     <div class="slide-page-num">3 / 10</div>
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-6xl">
       <div class="flex items-center gap-3 mb-4">
         <div class="slide-icon icon-emerald">
           <i class="fas fa-gem"></i>
@@ -358,7 +358,7 @@ tailwind.config = {
   <!-- ========== SLIDE 4: Find Your Hero ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #fffbeb)">
     <div class="slide-page-num">4 / 10</div>
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-6xl">
       <div class="flex items-center gap-3 mb-4">
         <div class="slide-icon icon-amber">
           <i class="fas fa-mask"></i>
@@ -404,7 +404,7 @@ tailwind.config = {
   <!-- ========== SLIDE 5: Voice Actor ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #fff1f2)">
     <div class="slide-page-num">5 / 10</div>
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-6xl">
       <div class="flex items-center gap-3 mb-4">
         <div class="slide-icon icon-rose">
           <i class="fas fa-microphone"></i>
@@ -441,6 +441,7 @@ tailwind.config = {
             <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#be123c;"><i class="fas fa-comments mr-1"></i>Fluency</span>
             <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#be123c;"><i class="fas fa-volume-up mr-1"></i>Speaking</span>
             <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#be123c;"><i class="fas fa-chart-bar mr-1"></i>AI Feedback</span>
+            <span class="value-badge" style="background:rgba(255,255,255,0.6);color:#be123c;"><i class="fas fa-theater-masks mr-1"></i>몰입형 학습</span>
           </div>
           <div class="text-slate-500 text-xs flex items-center gap-1 flex-shrink-0"><i class="fas fa-microchip"></i> STT &middot; TTS &middot; LLM</div>
         </div>
@@ -451,7 +452,7 @@ tailwind.config = {
   <!-- ========== SLIDE 6: Magic Fortune English ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #faf5ff)">
     <div class="slide-page-num">6 / 10</div>
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-6xl">
       <div class="flex items-center gap-3 mb-4">
         <div class="slide-icon icon-purple">
           <i class="fas fa-hat-wizard"></i>
@@ -499,7 +500,7 @@ tailwind.config = {
   <!-- ========== SLIDE 7: 캐릭터 작업 ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #fef3f2)">
     <div class="slide-page-num">7 / 10</div>
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-6xl">
       <div class="flex items-center gap-3 mb-4">
         <div class="slide-icon" style="background:linear-gradient(135deg,#e11d48,#9333ea);">
           <i class="fas fa-palette"></i>
@@ -517,7 +518,7 @@ tailwind.config = {
               <div style="width:36px;height:36px;border-radius:10px;background:#d97706;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;"><i class="fas fa-mask"></i></div>
               <h3 class="text-slate-800 font-bold text-sm">Find Your Hero</h3>
             </div>
-            <p class="text-slate-500 text-xs leading-relaxed">마블 히어로를 초등 3~4학년 타겟에 맞춰 <strong class="text-slate-600">Chibi 스타일</strong>로 변형. 코믹북 컨셉의 공통 디자인을 16명에게 일관 적용</p>
+            <p class="text-slate-500 text-sm leading-relaxed">마블 히어로를 초등 3~4학년 타겟에 맞춰 <strong class="text-slate-600">Chibi 스타일</strong>로 변형. 코믹북 컨셉의 공통 디자인을 16명에게 일관 적용</p>
             <div class="mt-2 flex flex-wrap gap-1">
               <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">Chibi 스타일</span>
               <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fffbeb;color:#d97706;">코믹북 컨셉</span>
@@ -529,7 +530,7 @@ tailwind.config = {
               <div style="width:36px;height:36px;border-radius:10px;background:#9333ea;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;"><i class="fas fa-hat-wizard"></i></div>
               <h3 class="text-slate-800 font-bold text-sm">Magic Fortune English</h3>
             </div>
-            <p class="text-slate-500 text-xs leading-relaxed">Luna &middot; Noir에 <strong class="text-slate-600">이름 &middot; 성격 부여</strong>, 소개 Orbs 구성, 탭 인터랙션, 아이템 일관성, <strong class="text-slate-600">음성 설정</strong></p>
+            <p class="text-slate-500 text-sm leading-relaxed">Luna &middot; Noir에 <strong class="text-slate-600">이름 &middot; 성격 부여</strong>, 소개 Orbs 구성, 탭 인터랙션, 아이템 일관성, <strong class="text-slate-600">음성 설정</strong></p>
             <div class="mt-2 flex flex-wrap gap-1">
               <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">캐릭터 정체성</span>
               <span class="text-xs px-2 py-0.5 rounded-full" style="background:#faf5ff;color:#9333ea;">인터랙션</span>
@@ -546,7 +547,7 @@ tailwind.config = {
               <div style="width:36px;height:36px;border-radius:10px;background:#e11d48;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;"><i class="fas fa-microphone-lines"></i></div>
               <h3 class="text-slate-800 font-bold text-sm">Voice Actor</h3>
             </div>
-            <p class="text-slate-500 text-xs leading-relaxed">동물 캐릭터 <strong class="text-slate-600">털 &middot; 표정 &middot; 피부 디테일</strong> 극대화. AI(Firefly) 목소리톤 사전 제작, 매력적 비주얼로 <strong class="text-slate-600">학습 동기 강화</strong></p>
+            <p class="text-slate-500 text-sm leading-relaxed">동물 캐릭터 <strong class="text-slate-600">털 &middot; 표정 &middot; 피부 디테일</strong> 극대화. AI(Firefly) 목소리톤 사전 제작, 매력적 비주얼로 <strong class="text-slate-600">학습 동기 강화</strong></p>
             <div class="mt-2 flex flex-wrap gap-1">
               <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fff1f2;color:#e11d48;">디테일 극대화</span>
               <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fff1f2;color:#e11d48;">AI 음성</span>
@@ -618,7 +619,7 @@ tailwind.config = {
   <!-- ========== SLIDE 8: 프로젝트 의의 ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #eef2ff)">
     <div class="slide-page-num">8 / 10</div>
-    <div class="w-full max-w-4xl">
+    <div class="w-full max-w-5xl">
       <div class="text-center mb-10">
         <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">프로젝트 <span class="gradient-text">핵심 의의</span></h2>
         <p class="text-slate-500">AI Playground가 만들어가는 가치</p>
@@ -672,7 +673,7 @@ tailwind.config = {
   <!-- ========== SLIDE 9: 개발 프로세스 & 도구 ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #f0fdf4)">
     <div class="slide-page-num">9 / 10</div>
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-6xl">
       <div class="text-center mb-4">
         <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-1">개발 프로세스 <span class="gradient-text">& 도구</span></h2>
         <p class="text-slate-500 text-xs">AI 에이전트와 함께하는 차세대 개발 워크플로우</p>
@@ -735,7 +736,7 @@ tailwind.config = {
   <!-- ========== SLIDE 10: 향후 계획 & 마무리 ========== -->
   <div class="slide" data-bg="linear-gradient(135deg, #ffffff, #eef2ff, #e0e7ff)">
     <div class="slide-page-num">10 / 10</div>
-    <div class="w-full max-w-4xl text-center">
+    <div class="w-full max-w-5xl text-center">
       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-8">
         <i class="fas fa-road"></i> Roadmap
       </div>
@@ -752,7 +753,7 @@ tailwind.config = {
         <div class="glass p-5 rounded-2xl text-center hover-card border border-indigo-200" style="min-width:160px">
           <div class="text-amber-600 text-xs font-bold mb-2">NEXT</div>
           <div class="text-slate-800 font-bold text-lg mb-1">4/27 3차 오픈</div>
-          <div class="text-slate-400 text-xs">신규 엔진 &middot;<br>미공개 모델 적용</div>
+          <div class="text-slate-400 text-xs">신규 엔진 적용 &middot;<br>에이전트 기반 개발 방식 표준화 연구</div>
           <div class="w-3 h-3 rounded-full bg-amber-500 mx-auto mt-3 animate-pulse"></div>
         </div>
         <div class="text-slate-300 text-2xl"><i class="fas fa-arrow-right"></i></div>

@@ -13,7 +13,7 @@ body { font-family: 'Pretendard', sans-serif; }
 .desk-designer { left: 245px; top: 75px; width: 80px; height: 50px; background: #c9c4d4; border: 1.5px solid #a8a0c8; }
 .desk-dev { left: 360px; top: 75px; width: 80px; height: 50px; background: #c9d4b8; border: 1.5px solid #a8b88a; }
 .desk-qa { left: 475px; top: 75px; width: 80px; height: 50px; background: #d4c4c4; border: 1.5px solid #c8a0a0; }
-.desk-label { position: absolute; font-size: 8px; color: #64748b; text-align: center; width: 80px; top: -14px; left: 0; font-weight: 500; }
+.desk-label { position: absolute; font-size: 11px; color: #64748b; text-align: center; width: 80px; top: -14px; left: 0; font-weight: 500; }
 
 .monitor { position: absolute; width: 30px; height: 22px; background: #2c2c2a; border-radius: 3px; top: 8px; left: 25px; border: 2px solid #444; }
 .monitor::after { content: ''; position: absolute; width: 10px; height: 3px; background: #2c2c2a; bottom: -5px; left: 10px; }
@@ -29,8 +29,8 @@ body { font-family: 'Pretendard', sans-serif; }
 .agent-body { position: relative; }
 .head { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto; position: relative; border: 2px solid rgba(0,0,0,0.15); }
 .torso { width: 28px; height: 20px; border-radius: 6px 6px 2px 2px; margin: 1px auto 0; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
-.icon { font-size: 9px; }
-.name-tag { font-size: 8px; color: #475569; text-align: center; margin-top: 3px; font-weight: 600; white-space: nowrap; line-height: 1.4; background: rgba(255,255,255,0.85); border-radius: 4px; padding: 1px 4px; }
+.icon { font-size: 10px; }
+.name-tag { font-size: 11px; color: #475569; text-align: center; margin-top: 3px; font-weight: 600; white-space: nowrap; line-height: 1.4; background: rgba(255,255,255,0.85); border-radius: 4px; padding: 2px 5px; }
 
 #orchestrator .head { background: #E8593C; width: 28px; height: 28px; }
 #orchestrator .torso { width: 32px; height: 20px; background: #c94520; }
@@ -45,7 +45,7 @@ body { font-family: 'Pretendard', sans-serif; }
 #rnd .head { background: #7F77DD; }
 #rnd .torso { background: #534AB7; }
 
-.speech-bubble { position: absolute; background: white; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 5px 8px; font-size: 9px; color: #334155; white-space: normal; pointer-events: none; z-index: 20; box-shadow: 0 2px 6px rgba(0,0,0,0.08); opacity: 0; transition: opacity 0.3s; max-width: 140px; line-height: 1.4; }
+.speech-bubble { position: absolute; background: white; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 6px 10px; font-size: 12px; color: #334155; white-space: normal; pointer-events: none; z-index: 20; box-shadow: 0 2px 6px rgba(0,0,0,0.08); opacity: 0; transition: opacity 0.3s; max-width: 180px; line-height: 1.5; }
 .speech-bubble.visible { opacity: 1; }
 .speech-bubble::after { content: ''; position: absolute; bottom: -7px; left: 14px; border: 6px solid transparent; border-top-color: white; border-bottom: none; }
 .speech-bubble::before { content: ''; position: absolute; bottom: -9px; left: 13px; border: 7px solid transparent; border-top-color: #e2e8f0; border-bottom: none; }
@@ -65,8 +65,8 @@ body { font-family: 'Pretendard', sans-serif; }
 .leaf:nth-child(2) { border-radius: 50% 50% 50% 0; margin-top: 3px; }
 
 #log-panel { padding: 10px 14px; max-height: 160px; overflow-y: auto; }
-#log-panel h3 { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
-.log-entry { font-size: 11px; padding: 3px 0; border-bottom: 0.5px solid #f1f5f9; color: #334155; line-height: 1.5; }
+#log-panel h3 { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+.log-entry { font-size: 13px; padding: 3px 0; border-bottom: 0.5px solid #f1f5f9; color: #334155; line-height: 1.5; }
 .log-entry:last-child { border-bottom: none; }
 .log-agent { font-weight: 600; margin-right: 4px; }
 .la-orc { color: #E8593C; }
@@ -74,13 +74,13 @@ body { font-family: 'Pretendard', sans-serif; }
 .la-des { color: #0891b2; }
 .la-dev { color: #639922; }
 .la-qa { color: #e11d48; }
-.log-time { color: #94a3b8; font-size: 9px; margin-right: 5px; }
+.log-time { color: #94a3b8; font-size: 11px; margin-right: 5px; }
 
 #controls { padding: 8px 14px; display: flex; align-items: center; gap: 10px; border-top: 0.5px solid #e2e8f0; }
-#start-btn { padding: 5px 12px; font-size: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; color: #334155; transition: background 0.15s; font-family: inherit; }
+#start-btn { padding: 6px 14px; font-size: 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; color: #334155; transition: background 0.15s; font-family: inherit; }
 #start-btn:hover { background: #f8fafc; }
-#status-text { font-size: 11px; color: #64748b; flex: 1; }
-#step-indicator { font-size: 10px; color: #94a3b8; }
+#status-text { font-size: 13px; color: #64748b; flex: 1; }
+#step-indicator { font-size: 12px; color: #94a3b8; }
 </style>
 
 <div id="sim">
@@ -107,7 +107,7 @@ body { font-family: 'Pretendard', sans-serif; }
         </div>
         <div class="torso"><span class="icon">🎯</span></div>
       </div>
-      <div class="name-tag">오케스트레이터<br><span style="font-size:7px;color:#E8593C;font-weight:700;">이경희</span></div>
+      <div class="name-tag">오케스트레이터<br><span style="font-size:10px;color:#E8593C;font-weight:700;">이경희</span></div>
     </div>
 
     <!-- Planner -->
@@ -116,7 +116,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">📋</span></div>
       </div>
-      <div class="name-tag">기획자<br><span style="font-size:7px;color:#3B8BD4;font-weight:700;">이경자</span></div>
+      <div class="name-tag">기획자<br><span style="font-size:10px;color:#3B8BD4;font-weight:700;">이경자</span></div>
     </div>
 
     <!-- Designer -->
@@ -125,7 +125,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">🎨</span></div>
       </div>
-      <div class="name-tag">디자이너<br><span style="font-size:7px;color:#0891b2;font-weight:700;">허차장</span></div>
+      <div class="name-tag">디자이너<br><span style="font-size:10px;color:#0891b2;font-weight:700;">허차장</span></div>
     </div>
 
     <!-- Developer -->
@@ -134,7 +134,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">💻</span></div>
       </div>
-      <div class="name-tag">개발자<br><span style="font-size:7px;color:#639922;font-weight:700;">태희차장</span></div>
+      <div class="name-tag">개발자<br><span style="font-size:10px;color:#639922;font-weight:700;">태희차장</span></div>
     </div>
 
     <!-- QA -->
@@ -143,7 +143,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">🔍</span></div>
       </div>
-      <div class="name-tag">QA<br><span style="font-size:7px;color:#e11d48;font-weight:700;">지과장</span></div>
+      <div class="name-tag">QA<br><span style="font-size:10px;color:#e11d48;font-weight:700;">지과장</span></div>
     </div>
 
     <!-- R&D -->
@@ -152,7 +152,7 @@ body { font-family: 'Pretendard', sans-serif; }
         <div class="head"><svg viewBox="0 0 24 24" style="width:14px;height:14px;margin:4px auto;display:block;fill:#fff;opacity:0.9"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 4v1h16v-1c0-2-3-4-8-4z"/></svg></div>
         <div class="torso"><span class="icon">📚</span></div>
       </div>
-      <div class="name-tag">R&D<br><span style="font-size:7px;color:#7F77DD;font-weight:700;">Evy</span></div>
+      <div class="name-tag">R&D<br><span style="font-size:10px;color:#7F77DD;font-weight:700;">Evy</span></div>
     </div>
 
     <!-- Speech bubbles -->
