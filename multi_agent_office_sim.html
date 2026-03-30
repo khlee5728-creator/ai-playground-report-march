@@ -5,7 +5,8 @@ body { font-family: 'Pretendard', sans-serif; }
 
 #sim { width: 100%; background: #f8fafc; border-radius: 12px; overflow: hidden; position: relative; user-select: none; }
 
-#office { position: relative; width: 100%; height: 360px; background: #f0ede8; border-bottom: 2px solid #e2e8f0; overflow: hidden; }
+#office-wrapper { width: 100%; height: 480px; overflow: hidden; border-bottom: 2px solid #e2e8f0; display: flex; align-items: center; justify-content: center; background: #f0ede8; }
+#office { position: relative; width: 580px; height: 360px; transform: scale(1.35); transform-origin: center center; }
 
 .desk { position: absolute; border-radius: 6px; }
 .desk-planner { left: 15px; top: 75px; width: 80px; height: 50px; background: #d4c5a9; border: 1.5px solid #b8a88a; }
@@ -64,7 +65,7 @@ body { font-family: 'Pretendard', sans-serif; }
 .leaf { width: 8px; height: 12px; background: #639922; border-radius: 50% 50% 0 50%; }
 .leaf:nth-child(2) { border-radius: 50% 50% 50% 0; margin-top: 3px; }
 
-#log-panel { padding: 10px 14px; max-height: 160px; overflow-y: auto; }
+#log-panel { padding: 12px 18px; max-height: 200px; overflow-y: auto; }
 #log-panel h3 { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
 .log-entry { font-size: 13px; padding: 3px 0; border-bottom: 0.5px solid #f1f5f9; color: #334155; line-height: 1.5; }
 .log-entry:last-child { border-bottom: none; }
@@ -76,7 +77,7 @@ body { font-family: 'Pretendard', sans-serif; }
 .la-qa { color: #e11d48; }
 .log-time { color: #94a3b8; font-size: 11px; margin-right: 5px; }
 
-#controls { padding: 8px 14px; display: flex; align-items: center; gap: 10px; border-top: 0.5px solid #e2e8f0; }
+#controls { padding: 10px 18px; display: flex; align-items: center; gap: 10px; border-top: 0.5px solid #e2e8f0; }
 #start-btn { padding: 6px 14px; font-size: 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; cursor: pointer; color: #334155; transition: background 0.15s; font-family: inherit; }
 #start-btn:hover { background: #f8fafc; }
 #status-text { font-size: 13px; color: #64748b; flex: 1; }
@@ -84,6 +85,7 @@ body { font-family: 'Pretendard', sans-serif; }
 </style>
 
 <div id="sim">
+  <div id="office-wrapper">
   <div id="office">
     <div class="wall"></div>
     <div class="window" style="left:100px"></div>
@@ -165,6 +167,7 @@ body { font-family: 'Pretendard', sans-serif; }
 
     <div class="floor-line"></div>
   </div>
+  </div>
 
   <div id="log-panel">
     <h3>에이전트 로그</h3>
@@ -200,10 +203,11 @@ const bubbles = {
   rnd: document.getElementById('bubble-rnd')
 };
 
+const SCALE = 1.35;
 function getCenter(el) {
   const r = el.getBoundingClientRect();
   const or = office.getBoundingClientRect();
-  return { x: r.left - or.left + r.width/2, y: r.top - or.top + r.height/2 };
+  return { x: (r.left - or.left + r.width/2) / SCALE, y: (r.top - or.top + r.height/2) / SCALE };
 }
 
 function showBubble(who, text, duration=2000) {
